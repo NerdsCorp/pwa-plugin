@@ -40,9 +40,13 @@ Turn Pelican Panel into a Progressive Web App (PWA) with install support and pus
 ### Via Panel UI
 
 1. Download the plugin zip
-2. Admin -> Plugins
-3. Import
-4. Install
+2. Remove the nested folder
+3. Rename to just "pwa-plugin"
+4. Re-zip the plugin
+5. Go ot Admin -> Plugins
+6. Import
+7. Install
+8. Configure PWA Settings
 
 ### Manual
 
@@ -109,37 +113,12 @@ convert logo.png -resize 512x512 favicon-512.png
 convert logo.png -resize 96x96 favicon-96.png
 ```
 
-## .env Defaults (Optional)
-
-You can provide defaults in `.env`:
-
-```env
-PWA_THEME_COLOR=#0ea5e9
-PWA_BACKGROUND_COLOR=#0f172a
-PWA_START_URL=/
-PWA_MANIFEST_ICON_192=/favicons/favicon-192.png
-PWA_MANIFEST_ICON_512=/favicons/favicon-512.png
-PWA_APPLE_TOUCH_ICON=/pelican.svg
-PWA_APPLE_TOUCH_ICON_152=/favicons/favicon-152.png
-PWA_APPLE_TOUCH_ICON_167=/favicons/favicon-167.png
-PWA_APPLE_TOUCH_ICON_180=/favicons/favicon-180.png
-PWA_NOTIFICATION_ICON=/favicons/favicon-192.png
-PWA_NOTIFICATION_BADGE=/favicons/favicon-96.png
-PWA_PUSH_ENABLED=false
-PWA_PUSH_SEND_ON_DATABASE_NOTIFICATIONS=true
-PWA_PUSH_SEND_ON_MAIL_NOTIFICATIONS=false
-PWA_VAPID_PUBLIC_KEY=
-PWA_VAPID_PRIVATE_KEY=
-PWA_VAPID_SUBJECT=mailto:admin@example.com
-```
-
 ## Push Notifications
 
 ### How it works
 
 - The plugin listens for Laravel `NotificationSent` events.
 - Database notifications can be pushed automatically.
-- Mail-only notifications can also be pushed if enabled (e.g., `ServerInstalled`).
 
 ### Enable Push
 
@@ -208,6 +187,14 @@ Quick actions are available:
 - PWAs on iOS have limited functionality compared to Android/Desktop
 - No background sync or push notifications
 - Must be added through Safari specifically
+
+## Subcribe the platform to Push and Notifcations
+   1. Go to profile
+   2. Slide over to the PWA Tab
+   3. Click Request Notifications 
+   4. Click Subscribe to Push
+   5. Click Test Push 
+   6. Sucsess!!
 
 ---
 
