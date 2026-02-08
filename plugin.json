@@ -1,0 +1,13 @@
+{
+    "id": "pwa-plugin",
+    "name": "Progressive Web App",
+    "author": "DR.Reeves",
+    "version": "1.0.0",
+    "description": "Adds Progressive Web App (PWA) functionality with push notification support, allowing users to install the panel as a native app and receive real-time browser notifications.",
+    "category": "plugin",
+    "namespace": "PwaPlugin",
+    "class": "PwaPlugin",
+    "composer_packages": {
+        "minishlink/web-push": "^9.0"
+    }
+}
