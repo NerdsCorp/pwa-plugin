@@ -3,10 +3,10 @@
 Turn Pelican Panel into a Progressive Web App (PWA) with install support and push notifications.
 
 ## Settings
-<img width="600" alt="image" src="https://github.com/user-attachments/assets/c6aa59ce-0bc8-455b-b8f1-9cebee5b55c2" />
+<img width="600" alt="image" src="https://github.com/user-attachments/assets/7f39e570-365f-4934-aff3-4a9ecb016a8f" />
 
 ## User Profile Settings
-<img width="600" alt="image" src="https://github.com/user-attachments/assets/b8804d48-cd53-492c-9322-d600676401d6" />
+<img width="600" alt="image" src="https://github.com/user-attachments/assets/dce9a77a-d496-46df-b47a-f4f01acef09e" />
 
 ## Android Notifcation
 <img width="600" alt="Screenshot_20260207_193224" src="https://github.com/user-attachments/assets/76e9430c-82f8-4592-afae-a1e2f0f3426f" />
