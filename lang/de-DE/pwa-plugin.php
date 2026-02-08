@@ -93,10 +93,35 @@ return [
     ],
     'notifications' => [
         'saved' => 'PWA-Einstellungen gespeichert.',
+        'subscribed' => 'Push-Benachrichtigungen erfolgreich abonniert.',
+        'unsubscribed' => 'Erfolgreich abgemeldet.',
+        'test_sent' => 'Test-Benachrichtigung wurde gesendet.',
+    ],
+    'errors' => [
+        'table_missing' => 'Datenbanktabelle für Push-Abonnements fehlt.',
+        'unauthorized' => 'Nicht autorisierter Zugriff.',
+        'library_missing' => 'Web-Push Bibliothek nicht gefunden.',
+        'vapid_missing' => 'VAPID-Schlüssel oder Betreff fehlen.',
+        'no_subscription' => 'Kein Abonnement für diesen Browser gefunden.',
+        'send_failed' => 'Senden der Benachrichtigung fehlgeschlagen.',
+        'unsupported' => 'Installation momentan nicht möglich. Die App ist eventuell bereits installiert oder Ihr Browser erfüllt die Anforderungen nicht.',
     ],
     'profile' => [
         'tab_label' => 'PWA',
         'section_heading' => 'PWA Aktionen',
         'section_description' => 'Verwalten Sie Ihre Geräteverbindung und Benachrichtigungen.',
+    ],
+    'messages' => [
+        'update_available' => 'Eine neue Version ist verfügbar. Jetzt neu laden?',
+        'test_notification_body' => 'Dies ist eine Test-Benachrichtigung deiner PWA.',
+        'new_notification' => 'Du hast eine neue Benachrichtigung.',
+    ],
+    'manifest' => [
+        'description' => 'Die offizielle App für unser Panel.',
+        'shortcuts' => [
+            'dashboard_name' => 'Dashboard',
+            'dashboard_short' => 'Dashboard',
+            'dashboard_description' => 'Deine Server ansehen',
+        ],
     ],
 ];

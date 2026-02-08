@@ -7,12 +7,12 @@ use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Pages\Page;
 use Filament\Notifications\Notification;
 use PwaPlugin\Services\PwaSettingsRepository;
+use PwaPlugin\Services\PwaActions;
 use Filament\Actions\Action;
 use Filament\Schemas\Components\Group;
 use Filament\Schemas\Contracts\HasSchemas;
 use Filament\Schemas\Components\Tabs;
 use Filament\Schemas\Components\Tabs\Tab;
-use Filament\Schemas\Components\Actions as SchemaActions;
 use Filament\Support\Enums\IconSize;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
@@ -218,51 +218,7 @@ class PwaSettings extends Page implements HasSchemas
                         ->label(trans('pwa-plugin::pwa-plugin.tabs.actions'))
                         ->icon('heroicon-o-command-line')
                         ->schema([
-                            Group::make()
-                                ->columns(['default' => 1, 'lg' => 5]) 
-                                ->extraAttributes(['class' => 'gap-4'])
-                                ->schema([
-                                    SchemaActions::make([
-                                        Action::make('install')
-                                            ->label(trans('pwa-plugin::pwa-plugin.actions.install'))
-                                            ->icon('heroicon-o-arrow-down-tray')
-                                            ->color('success')
-                                            ->extraAttributes(['onclick' => 'window.pwaInstall?.(); return false;']),
-                                    ])->fullWidth(),
-
-                                    SchemaActions::make([
-                                        Action::make('notifications')
-                                            ->label(trans('pwa-plugin::pwa-plugin.actions.request_notifications'))
-                                            ->icon('heroicon-o-bell-snooze')
-                                            ->color('info')
-                                            ->extraAttributes(['onclick' => 'window.pwaRequestNotifications?.(); return false;']),
-                                    ])->fullWidth(),
-
-                                    SchemaActions::make([
-                                        Action::make('subscribe')
-                                            ->label(trans('pwa-plugin::pwa-plugin.actions.subscribe'))
-                                            ->icon('heroicon-o-check-circle')
-                                            ->color('primary')
-                                            ->extraAttributes(['onclick' => 'window.pwaRegisterPush?.(); return false;']),
-                                    ])->fullWidth(),
-
-                                    SchemaActions::make([
-                                        Action::make('unsubscribe')
-                                            ->label(trans('pwa-plugin::pwa-plugin.actions.unsubscribe'))
-                                            ->icon('heroicon-o-x-circle')
-                                            ->color('danger')
-                                            ->extraAttributes(['onclick' => 'window.pwaUnregisterPush?.(); return false;']),
-                                    ])->fullWidth(),
-
-                                    SchemaActions::make([
-                                        Action::make('test')
-                                            ->label(trans('pwa-plugin::pwa-plugin.actions.test_push'))
-                                            ->icon('heroicon-o-paper-airplane')
-                                            ->color('warning')
-                                            ->visible(fn () => app(\PwaPlugin\Services\PwaSettingsRepository::class)->get('push_enabled') ?? false)
-                                            ->extraAttributes(['onclick' => 'window.pwaSendTestPush?.(); return false;']),
-                                    ])->fullWidth(),
-                                ]),
+                            PwaActions::make(),
                         ]),
                 ])
                 ->persistTabInQueryString()

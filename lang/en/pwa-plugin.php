@@ -93,10 +93,35 @@ return [
     ],
     'notifications' => [
         'saved' => 'PWA settings saved.',
+        'subscribed' => 'Successfully subscribed to push notifications.',
+        'unsubscribed' => 'Successfully unsubscribed.',
+        'test_sent' => 'Test notification has been sent.',
+    ],
+    'errors' => [
+        'table_missing' => 'Push subscriptions table is missing.',
+        'unauthorized' => 'Unauthorized access.',
+        'library_missing' => 'Web Push library not found.',
+        'vapid_missing' => 'VAPID keys or subject are missing.',
+        'no_subscription' => 'No subscription found for this browser.',
+        'send_failed' => 'Failed to send notification.',
+        'unsupported' => 'Installation is currently not possible. The app may already be installed or your browser does not meet the requirements.',
     ],
     'profile' => [
         'tab_label' => 'PWA',
         'section_heading' => 'PWA Actions',
         'section_description' => 'Manage your device connection and notifications.',
+    ],
+    'messages' => [
+        'update_available' => 'A new version is available. Reload now?',
+        'test_notification_body' => 'This is a test notification from your PWA.',
+        'new_notification' => 'You have a new notification.',
+    ],
+    'manifest' => [
+        'description' => 'The official app for our panel.',
+        'shortcuts' => [
+            'dashboard_name' => 'Dashboard',
+            'dashboard_short' => 'Dashboard',
+            'dashboard_description' => 'View your servers',
+        ],
     ],
 ];
