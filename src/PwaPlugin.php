@@ -12,12 +12,14 @@ use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\HtmlString;
+use Illuminate\Notifications\DatabaseNotification;
 use Illuminate\Notifications\Events\NotificationSent;
 use App\Enums\TabPosition;
 use PwaPlugin\Filament\Pages\PwaSettings;
 use PwaPlugin\Http\Controllers\PwaController;
 use PwaPlugin\Http\Controllers\PwaPushController;
 use PwaPlugin\Listeners\SendPwaPushOnDatabaseNotification;
+use PwaPlugin\Listeners\SendPwaPushOnDatabaseNotificationCreated;
 use PwaPlugin\Services\PwaSettingsRepository;
 use PwaPlugin\Services\PwaActions;
 
@@ -45,6 +47,7 @@ class PwaPlugin implements PluginContract
     {
         $this->registerRoutes();
         Event::listen(NotificationSent::class, SendPwaPushOnDatabaseNotification::class);
+        $this->registerDatabaseNotificationHook();
 
         $this->registerProfileCustomizationTab();
         $this->registerHeadHookForAllPanels();
@@ -226,6 +229,17 @@ HTML;
         foreach (Filament::getPanels() as $panel) {
             $this->registerHeadHook($panel);
         }
+    }
+
+    private function registerDatabaseNotificationHook(): void
+    {
+        if (!class_exists(DatabaseNotification::class)) {
+            return;
+        }
+
+        DatabaseNotification::created(function (DatabaseNotification $notification): void {
+            app(SendPwaPushOnDatabaseNotificationCreated::class)->handle($notification);
+        });
     }
 
     private function registerProfileCustomizationTab(): void
