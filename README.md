@@ -2,6 +2,7 @@
 
 Transform your Pelican Panel into a full-fledged Progressive Web App. Your users can install it like a native app and get push notifications for all the important stuff.
 
+
 ## Screenshots
 
 ### Settings
