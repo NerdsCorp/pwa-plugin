@@ -25,3 +25,4 @@ return [
     'default_notification_icon' => env('PWA_PLUGIN_NOTIFICATION_ICON', '/pelican.svg'),
     'default_notification_badge' => env('PWA_PLUGIN_NOTIFICATION_BADGE', '/pelican.svg'),
 ];
+ 

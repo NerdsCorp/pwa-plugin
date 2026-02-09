@@ -17,3 +17,4 @@ class PwaSetting extends Model
         'value' => 'array',
     ];
 }
+ 

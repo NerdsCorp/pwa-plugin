@@ -217,4 +217,4 @@ JS;
 
         return 'image/png';
     }
-}
+} 

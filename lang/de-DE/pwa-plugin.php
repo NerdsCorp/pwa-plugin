@@ -124,4 +124,4 @@ return [
             'dashboard_description' => 'Deine Server ansehen',
         ],
     ],
-];
+]; 

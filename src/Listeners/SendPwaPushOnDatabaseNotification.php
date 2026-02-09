@@ -161,4 +161,4 @@ class SendPwaPushOnDatabaseNotification
             'actions' => $data['actions'] ?? [],
         ];
     }
-}
+} 

@@ -84,3 +84,4 @@ class PwaSettingsRepository
         return $settings;
     }
 }
+ 

@@ -212,3 +212,4 @@ Android doesn't support SVG or ICO for app icons or notifications. Switch to PNG
 ## License
 
 GNU General Public License v3.0
+ 

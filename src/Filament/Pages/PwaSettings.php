@@ -250,4 +250,4 @@ class PwaSettings extends Page implements HasSchemas
         $value = (string) config('pwa.' . $key, $fallback);
         return $value ?: (string) env($envKey, $fallback);
     }
-}
+} 

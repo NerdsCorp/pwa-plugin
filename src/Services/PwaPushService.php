@@ -42,3 +42,4 @@ class PwaPushService
         return true;
     }
 }
+ 

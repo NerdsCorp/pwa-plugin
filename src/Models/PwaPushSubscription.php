@@ -24,3 +24,4 @@ class PwaPushSubscription extends Model
         return $this->morphTo();
     }
 }
+ 
