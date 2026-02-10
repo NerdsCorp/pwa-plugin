@@ -1,11 +1,9 @@
 includes:
-    - vendor/nunomaduro/larastan/extension.neon
+    - vendor/larastan/larastan/extension.neon
 
 parameters:
     level: 5
     paths:
         - src
-    
-    # Ignore errors in generated files or vendor
     excludePaths:
         - vendor
