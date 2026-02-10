@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 namespace PwaPlugin\Http\Controllers;
 
@@ -16,7 +16,7 @@ class PwaController extends Controller
         $themeColor = $this->setting('theme_color', '#0ea5e9');
         $backgroundColor = $this->setting('background_color', '#0f172a');
         $startUrl = $this->startUrl();
-        
+
         $icon192 = $this->setting('manifest_icon_192', '/pelican.svg');
         $icon512 = $this->setting('manifest_icon_512', '/pelican.svg');
 
@@ -35,14 +35,14 @@ class PwaController extends Controller
                     'src' => $this->assetOrUrl($icon192),
                     'sizes' => '192x192',
                     'type' => $this->iconMime($icon192),
-                    'purpose' => 'any maskable'
+                    'purpose' => 'any maskable',
                 ],
                 [
                     'src' => $this->assetOrUrl($icon512),
                     'sizes' => '512x512',
                     'type' => $this->iconMime($icon512),
-                    'purpose' => 'any maskable'
-                ]
+                    'purpose' => 'any maskable',
+                ],
             ],
             'categories' => ['utilities', 'productivity'],
             'shortcuts' => [
@@ -54,11 +54,11 @@ class PwaController extends Controller
                     'icons' => [
                         [
                             'src' => $this->assetOrUrl($icon192),
-                            'sizes' => '192x192'
-                        ]
-                    ]
-                ]
-            ]
+                            'sizes' => '192x192',
+                        ],
+                    ],
+                ],
+            ],
         ];
 
         return response()->json($manifest)
@@ -71,7 +71,7 @@ class PwaController extends Controller
         $cacheVersion = (int) $this->setting('cache_version', 1);
         $cacheEnabled = (bool) $this->setting('cache_enabled', false);
         $precacheUrls = $this->parsePrecacheUrls((string) $this->setting('cache_precache_urls', ''));
-        
+
         // Dynamische Texte für den SW (Hardcoded Texte ersetzt)
         $swDefaultTitle = config('app.name', 'Pelican Panel');
         $swDefaultBody = trans('pwa-plugin::pwa-plugin.messages.new_notification');
@@ -115,7 +115,7 @@ self.addEventListener('activate', (event) => {
 // Push notification handler
 self.addEventListener('push', (event) => {
     let data = {};
-    
+
     if (event.data) {
         try {
             data = event.data.json();
@@ -218,7 +218,7 @@ JS;
                 json_encode($precacheUrls, JSON_UNESCAPED_SLASHES),
                 addslashes($swDefaultTitle),
                 addslashes($swDefaultBody),
-                addslashes($swDefaultIcon)
+                addslashes($swDefaultIcon),
             ],
             $serviceWorker
         );
@@ -283,3 +283,5 @@ JS;
         return array_values(array_unique($urls));
     }
 }
+
+

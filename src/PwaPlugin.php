@@ -1,7 +1,8 @@
-<?php
+﻿<?php
 
 namespace PwaPlugin;
 
+use App\Enums\TabPosition;
 use Filament\Contracts\Plugin as PluginContract;
 use Filament\Panel;
 use Filament\Schemas\Components\Section;
@@ -9,10 +10,9 @@ use Filament\Schemas\Components\Tabs\Tab;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\HtmlString;
-use App\Enums\TabPosition;
 use PwaPlugin\Filament\Pages\PwaSettings;
-use PwaPlugin\Services\PwaSettingsRepository;
 use PwaPlugin\Services\PwaActions;
+use PwaPlugin\Services\PwaSettingsRepository;
 
 class PwaPlugin implements PluginContract
 {
@@ -41,7 +41,7 @@ class PwaPlugin implements PluginContract
     {
         $panel->renderHook(
             'panels::head.end',
-            fn (): HtmlString => $this->getPwaHeadHtml()
+            fn (): HtmlString => $this->getPwaHeadHtml(),
         );
     }
 
@@ -50,9 +50,9 @@ class PwaPlugin implements PluginContract
         $settings = app(PwaSettingsRepository::class);
         $settings->ensureVapidKeys();
         $appName = config('app.name', 'Pelican Panel');
-        
+
         $themeColor = $settings->get('theme_color', config('pwa-plugin.theme_color', '#0ea5e9'));
-        
+
         $appleDefault = $this->assetOrUrl($settings->get('apple_touch_icon', config('pwa-plugin.apple_touch_icon', '/pelican.svg')));
         $apple152 = $this->assetOrUrl($settings->get('apple_touch_icon_152', config('pwa-plugin.apple_touch_icon_152', $appleDefault)));
         $apple167 = $this->assetOrUrl($settings->get('apple_touch_icon_167', config('pwa-plugin.apple_touch_icon_167', $appleDefault)));
@@ -67,7 +67,7 @@ class PwaPlugin implements PluginContract
 
         $vapidPublicKey = json_encode($settings->get('vapid_public_key', config('pwa-plugin.vapid_public_key')));
         $pushEnabled = json_encode($settings->get('push_enabled', config('pwa-plugin.push_enabled', false)));
-        
+
         $langUpdateAvailable = json_encode(trans('pwa-plugin::pwa-plugin.messages.update_available'));
         $langInstallAlready = json_encode(trans('pwa-plugin::pwa-plugin.errors.install_already'));
 
@@ -145,9 +145,9 @@ class PwaPlugin implements PluginContract
         };
 
         window.pwaSendTestPush = () => {
-            return fetch(window.pwaConfig.routes.test, { 
-                method: 'POST', 
-                headers: { 'X-CSRF-TOKEN': pwaCsrfToken() } 
+            return fetch(window.pwaConfig.routes.test, {
+                method: 'POST',
+                headers: { 'X-CSRF-TOKEN': pwaCsrfToken() }
             });
         };
 
@@ -230,7 +230,7 @@ HTML;
                         ->schema([
                             PwaActions::make(),
                         ]),
-                ])
+                ]),
         );
     }
 
@@ -251,3 +251,5 @@ HTML;
         return asset(ltrim($value, '/'));
     }
 }
+
+

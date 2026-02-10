@@ -1,23 +1,23 @@
-<?php
+﻿<?php
 
 namespace PwaPlugin\Filament\Pages;
 
-use Filament\Facades\Filament;
-use Filament\Forms\Concerns\InteractsWithForms;
-use Filament\Pages\Page;
-use Filament\Notifications\Notification;
-use PwaPlugin\Services\PwaSettingsRepository;
-use PwaPlugin\Services\PwaActions;
 use Filament\Actions\Action;
+use Filament\Facades\Filament;
+use Filament\Forms\Components\ColorPicker;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\Toggle;
+use Filament\Forms\Concerns\InteractsWithForms;
+use Filament\Notifications\Notification;
+use Filament\Pages\Page;
 use Filament\Schemas\Components\Group;
-use Filament\Schemas\Contracts\HasSchemas;
 use Filament\Schemas\Components\Tabs;
 use Filament\Schemas\Components\Tabs\Tab;
+use Filament\Schemas\Contracts\HasSchemas;
 use Filament\Support\Enums\IconSize;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Toggle;
-use Filament\Forms\Components\ColorPicker;
-use Filament\Forms\Components\Textarea;
+use PwaPlugin\Services\PwaActions;
+use PwaPlugin\Services\PwaSettingsRepository;
 
 class PwaSettings extends Page implements HasSchemas
 {
@@ -28,24 +28,31 @@ class PwaSettings extends Page implements HasSchemas
     protected static ?string $slug = 'pwa';
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-device-phone-mobile';
-    
+
     protected static \UnitEnum|string|null $navigationGroup = 'Advanced';
-    
+
     protected static ?int $navigationSort = 90;
 
     public ?array $data = [];
 
-    public function hasLogo(): bool { return false; }
-    public function getLogo(): ?string { return null; }
-    
-    public function getTitle(): string 
-    { 
-        return trans('pwa-plugin::pwa-plugin.settings.title'); 
+    public function hasLogo(): bool
+    {
+        return false;
     }
 
-    public static function getNavigationLabel(): string 
-    { 
-        return trans('pwa-plugin::pwa-plugin.navigation.label'); 
+    public function getLogo(): ?string
+    {
+        return null;
+    }
+
+    public function getTitle(): string
+    {
+        return trans('pwa-plugin::pwa-plugin.settings.title');
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return trans('pwa-plugin::pwa-plugin.navigation.label');
     }
 
     public static function shouldRegisterNavigation(): bool
@@ -53,7 +60,7 @@ class PwaSettings extends Page implements HasSchemas
         return Filament::getCurrentPanel()?->getId() === 'admin';
     }
 
-    protected function getFormStatePath(): ?string 
+    protected function getFormStatePath(): ?string
     {
         return 'data';
     }
@@ -85,7 +92,7 @@ class PwaSettings extends Page implements HasSchemas
             'default_notification_icon' => $this->defaultFromEnv('default_notification_icon', 'PWA_PLUGIN_NOTIFICATION_ICON', '/pelican.svg'),
             'default_notification_badge' => $this->defaultFromEnv('default_notification_badge', 'PWA_PLUGIN_NOTIFICATION_BADGE', '/pelican.svg'),
         ];
-        
+
         $values = $settings->allWithDefaults($defaults);
         $this->data = $values;
         $this->form->fill($values);
@@ -105,18 +112,15 @@ class PwaSettings extends Page implements HasSchemas
                                     ->label(trans('pwa-plugin::pwa-plugin.fields.theme_color.label'))
                                     ->helperText(trans('pwa-plugin::pwa-plugin.fields.theme_color.helper'))
                                     ->required(),
-                                
                                 ColorPicker::make('background_color')
                                     ->label(trans('pwa-plugin::pwa-plugin.fields.background_color.label'))
                                     ->helperText(trans('pwa-plugin::pwa-plugin.fields.background_color.helper'))
                                     ->required(),
-                                
                                 TextInput::make('start_url')
                                     ->label(trans('pwa-plugin::pwa-plugin.fields.start_url.label'))
                                     ->helperText(trans('pwa-plugin::pwa-plugin.fields.start_url.helper'))
                                     ->required()
                                     ->maxLength(255),
-
                                 TextInput::make('cache_name')
                                     ->label(trans('pwa-plugin::pwa-plugin.fields.cache_name.label'))
                                     ->helperText(trans('pwa-plugin::pwa-plugin.fields.cache_name.helper'))
@@ -127,54 +131,45 @@ class PwaSettings extends Page implements HasSchemas
                                 ->label(trans('pwa-plugin::pwa-plugin.fields.cache_version.label'))
                                 ->numeric()
                                 ->required(),
-
                             Toggle::make('cache_enabled')
                                 ->label(trans('pwa-plugin::pwa-plugin.fields.cache_enabled.label'))
                                 ->helperText(trans('pwa-plugin::pwa-plugin.fields.cache_enabled.helper')),
-
                             Textarea::make('cache_precache_urls')
                                 ->label(trans('pwa-plugin::pwa-plugin.fields.cache_precache_urls.label'))
                                 ->helperText(trans('pwa-plugin::pwa-plugin.fields.cache_precache_urls.helper'))
                                 ->rows(4)
                                 ->visible(fn ($get) => $get('cache_enabled')),
-                            
                             Group::make()->columns(2)->schema([
                                 TextInput::make('manifest_icon_192')
                                     ->label(trans('pwa-plugin::pwa-plugin.fields.manifest_icon_192.label'))
                                     ->helperText(trans('pwa-plugin::pwa-plugin.fields.manifest_icon_192.helper'))
                                     ->required()
                                     ->maxLength(255),
-
                                 TextInput::make('manifest_icon_512')
                                     ->label(trans('pwa-plugin::pwa-plugin.fields.manifest_icon_512.label'))
                                     ->helperText(trans('pwa-plugin::pwa-plugin.fields.manifest_icon_512.helper'))
                                     ->required()
                                     ->maxLength(255),
                             ]),
-
                             Group::make()->columns(2)->schema([
                                 TextInput::make('apple_touch_icon')
                                     ->label(trans('pwa-plugin::pwa-plugin.fields.apple_touch_icon.label'))
                                     ->required()
                                     ->maxLength(255),
-
                                 TextInput::make('apple_touch_icon_152')
                                     ->label(trans('pwa-plugin::pwa-plugin.fields.apple_touch_icon_152.label'))
                                     ->required()
                                     ->maxLength(255),
-
                                 TextInput::make('apple_touch_icon_167')
                                     ->label(trans('pwa-plugin::pwa-plugin.fields.apple_touch_icon_167.label'))
                                     ->required()
                                     ->maxLength(255),
-
                                 TextInput::make('apple_touch_icon_180')
                                     ->label(trans('pwa-plugin::pwa-plugin.fields.apple_touch_icon_180.label'))
                                     ->required()
                                     ->maxLength(255),
                             ]),
                         ]),
-
                     Tab::make('Push Notifications')
                         ->label(trans('pwa-plugin::pwa-plugin.tabs.push'))
                         ->icon('heroicon-o-bell')
@@ -183,29 +178,24 @@ class PwaSettings extends Page implements HasSchemas
                                 ->label(trans('pwa-plugin::pwa-plugin.fields.push_enabled.label'))
                                 ->helperText(trans('pwa-plugin::pwa-plugin.fields.push_enabled.helper'))
                                 ->reactive(),
-                            
                             Toggle::make('push_send_on_database_notifications')
                                 ->label(trans('pwa-plugin::pwa-plugin.fields.push_send_on_db.label'))
                                 ->helperText(trans('pwa-plugin::pwa-plugin.fields.push_send_on_db.helper')),
-                            
                             Toggle::make('push_send_on_mail_notifications')
                                 ->label(trans('pwa-plugin::pwa-plugin.fields.push_send_on_mail.label'))
                                 ->helperText(trans('pwa-plugin::pwa-plugin.fields.push_send_on_mail.helper')),
-
                             TextInput::make('vapid_subject')
                                 ->label(trans('pwa-plugin::pwa-plugin.fields.vapid_subject.label'))
                                 ->helperText(trans('pwa-plugin::pwa-plugin.fields.vapid_subject.helper'))
                                 ->required()
                                 ->maxLength(255)
                                 ->visible(fn ($get) => $get('push_enabled')),
-                            
                             Group::make()->columns(2)->schema([
                                 TextInput::make('vapid_public_key')
                                     ->label(trans('pwa-plugin::pwa-plugin.fields.vapid_public_key.label'))
                                     ->required()
                                     ->maxLength(255)
                                     ->visible(fn ($get) => $get('push_enabled')),
-                                
                                 TextInput::make('vapid_private_key')
                                     ->label(trans('pwa-plugin::pwa-plugin.fields.vapid_private_key.label'))
                                     ->password()
@@ -213,14 +203,12 @@ class PwaSettings extends Page implements HasSchemas
                                     ->maxLength(255)
                                     ->visible(fn ($get) => $get('push_enabled')),
                             ]),
-
                             Group::make()->columns(2)->schema([
                                 TextInput::make('default_notification_icon')
                                     ->label(trans('pwa-plugin::pwa-plugin.fields.default_notification_icon.label'))
                                     ->helperText(trans('pwa-plugin::pwa-plugin.fields.default_notification_icon.helper'))
                                     ->required()
                                     ->maxLength(255),
-
                                 TextInput::make('default_notification_badge')
                                     ->label(trans('pwa-plugin::pwa-plugin.fields.default_notification_badge.label'))
                                     ->helperText(trans('pwa-plugin::pwa-plugin.fields.default_notification_badge.helper'))
@@ -228,7 +216,6 @@ class PwaSettings extends Page implements HasSchemas
                                     ->maxLength(255),
                             ]),
                         ]),
-
                     Tab::make('Actions')
                         ->label(trans('pwa-plugin::pwa-plugin.tabs.actions'))
                         ->icon('heroicon-o-command-line')
@@ -236,7 +223,7 @@ class PwaSettings extends Page implements HasSchemas
                             PwaActions::make(),
                         ]),
                 ])
-                ->persistTabInQueryString()
+                ->persistTabInQueryString(),
         ];
     }
 
@@ -245,7 +232,8 @@ class PwaSettings extends Page implements HasSchemas
         return [
             Action::make('save')
                 ->label(trans('pwa-plugin::pwa-plugin.actions.save'))
-                ->iconButton()->iconSize(IconSize::ExtraLarge)
+                ->iconButton()
+                ->iconSize(IconSize::ExtraLarge)
                 ->icon('tabler-device-floppy')
                 ->action('save')
                 ->authorize(fn () => user()?->can('update settings'))
@@ -272,6 +260,7 @@ class PwaSettings extends Page implements HasSchemas
     private function defaultFromEnv(string $key, string $envKey, string $fallback): string
     {
         $value = (string) config('pwa-plugin.' . $key, $fallback);
+
         return $value ?: (string) env($envKey, $fallback);
     }
 
@@ -306,5 +295,5 @@ class PwaSettings extends Page implements HasSchemas
     {
         // No-op: uploads removed.
     }
-
 }
+

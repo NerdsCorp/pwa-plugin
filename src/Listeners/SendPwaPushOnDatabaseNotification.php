@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 namespace PwaPlugin\Listeners;
 
@@ -8,8 +8,8 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
 use PwaPlugin\Jobs\SendPwaPush;
 use PwaPlugin\Models\PwaPushSubscription;
-use PwaPlugin\Services\PwaSettingsRepository;
 use PwaPlugin\Services\PwaPushService;
+use PwaPlugin\Services\PwaSettingsRepository;
 
 class SendPwaPushOnDatabaseNotification
 {
@@ -29,13 +29,17 @@ class SendPwaPushOnDatabaseNotification
             return;
         }
 
-        if ($event->channel === 'database'
-            && !$this->settings->get('push_send_on_database_notifications', config('pwa-plugin.push_send_on_database_notifications', true))) {
+        if (
+            $event->channel === 'database'
+            && !$this->settings->get('push_send_on_database_notifications', config('pwa-plugin.push_send_on_database_notifications', true))
+        ) {
             return;
         }
 
-        if ($event->channel === 'mail'
-            && !$this->settings->get('push_send_on_mail_notifications', config('pwa-plugin.push_send_on_mail_notifications', false))) {
+        if (
+            $event->channel === 'mail'
+            && !$this->settings->get('push_send_on_mail_notifications', config('pwa-plugin.push_send_on_mail_notifications', false))
+        ) {
             return;
         }
 
@@ -144,7 +148,7 @@ class SendPwaPushOnDatabaseNotification
     {
         $defaultTitle = config('app.name', 'Pelican');
         $defaultBody = trans('pwa-plugin::pwa-plugin.messages.new_notification');
-        
+
         $title = $data['title'] ?? $data['subject'] ?? $defaultTitle;
         $body = $data['body'] ?? $data['message'] ?? $defaultBody;
         $url = $data['url'] ?? $data['action_url'] ?? url('/app');
@@ -182,3 +186,4 @@ class SendPwaPushOnDatabaseNotification
     }
 
 }
+

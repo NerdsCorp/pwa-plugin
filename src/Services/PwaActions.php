@@ -1,11 +1,11 @@
-<?php
+﻿<?php
 
 namespace PwaPlugin\Services;
 
 use Filament\Actions\Action;
+use Filament\Notifications\Notification;
 use Filament\Schemas\Components\Actions as SchemaActions;
 use Filament\Schemas\Components\Group;
-use Filament\Notifications\Notification;
 use Illuminate\Support\Str;
 use PwaPlugin\Services\PwaSettingsRepository;
 
@@ -72,20 +72,20 @@ class PwaActions
                         ->icon('heroicon-o-paper-airplane')
                         ->color('warning')
                         ->visible(fn () => app(PwaSettingsRepository::class)->get('push_enabled', config('pwa-plugin.push_enabled', false)) ?? false)
-                        ->action(fn() => Notification::make()->title(trans('pwa-plugin::pwa-plugin.notifications.test_sent'))->success()->send())
-                        ->extraAttributes(['onclick' => <<<JS
+                        ->action(fn () => Notification::make()->title(trans('pwa-plugin::pwa-plugin.notifications.test_sent'))->success()->send())
+                        ->extraAttributes(['onclick' => <<<'JS'
                             const btn = event.target;
                             btn.disabled = true;
-                            fetch(window.pwaConfig.routes.test, { 
-                                method: 'POST', 
-                                headers: { 
+                            fetch(window.pwaConfig.routes.test, {
+                                method: 'POST',
+                                headers: {
                                     'X-CSRF-TOKEN': pwaCsrfToken(),
                                     'Accept': 'application/json'
-                                } 
+                                }
                             }).then(res => {
                                 btn.disabled = false;
-                                if(res.ok) {
-                                    \$wire.call('mountAction', 'test');
+                                if (res.ok) {
+                                    $wire.call('mountAction', 'test');
                                 }
                             }).catch(() => {
                                 btn.disabled = false;
@@ -96,3 +96,4 @@ class PwaActions
             ]);
     }
 }
+
