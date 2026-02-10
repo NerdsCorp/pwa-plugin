@@ -1,23 +1,19 @@
 <?php
 
 return [
-
     'cache_version' => env('PWA_PLUGIN_CACHE_VERSION', 1),
     'cache_name' => env('PWA_PLUGIN_CACHE_NAME', 'pelican-pwa-v1'),
     'cache_enabled' => env('PWA_PLUGIN_CACHE_ENABLED', false),
     'cache_precache_urls' => env('PWA_PLUGIN_CACHE_PRECACHE_URLS', ''),
-    
     'theme_color' => env('PWA_PLUGIN_THEME_COLOR', '#0ea5e9'),
     'background_color' => env('PWA_PLUGIN_BACKGROUND_COLOR', '#0f172a'),
     'start_url' => env('PWA_PLUGIN_START_URL', '/'),
-
     'manifest_icon_192' => env('PWA_PLUGIN_MANIFEST_ICON_192', '/pelican.svg'),
     'manifest_icon_512' => env('PWA_PLUGIN_MANIFEST_ICON_512', '/pelican.svg'),
     'apple_touch_icon' => env('PWA_PLUGIN_APPLE_TOUCH_ICON', '/pelican.svg'),
     'apple_touch_icon_152' => env('PWA_PLUGIN_APPLE_TOUCH_ICON_152', '/pelican.svg'),
     'apple_touch_icon_167' => env('PWA_PLUGIN_APPLE_TOUCH_ICON_167', '/pelican.svg'),
     'apple_touch_icon_180' => env('PWA_PLUGIN_APPLE_TOUCH_ICON_180', '/pelican.svg'),
-
     'push_enabled' => env('PWA_PLUGIN_PUSH_ENABLED', false),
     'push_send_on_database_notifications' => env('PWA_PLUGIN_PUSH_SEND_ON_DATABASE_NOTIFICATIONS', true),
     'push_send_on_mail_notifications' => env('PWA_PLUGIN_PUSH_SEND_ON_MAIL_NOTIFICATIONS', false),
