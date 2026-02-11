@@ -93,7 +93,7 @@ return [
     ],
     'actions' => [
         'install' => 'Zainstaluj PWA',
-        'request_notifications' => 'Request Notifications',
+        'request_notifications' => 'Proś o powiadomienia',
         'subscribe' => 'Subskrybuj Push',
         'unsubscribe' => 'Odsubskrybuj',
         'test_push' => 'Wyślij testowego Pusha',
@@ -106,7 +106,7 @@ return [
         'test_sent' => 'Testowe powiadomienie zostało wysłane.',
     ],
     'errors' => [
-        'table_missing' => 'Nie znaleziono tabeli subskrybcji Push',
+        'table_missing' => 'Nie znaleziono tabeli subskrypcji Push',
         'unauthorized' => 'Nieautoryzowany dostęp.',
         'library_missing' => 'Nie znaleziono biblioteki Web Push.',
         'vapid_missing' => 'Nie znaleziono kluczy lub podmiotu VAPID.',
@@ -117,13 +117,13 @@ return [
         'install_android_body' => 'Otwórz menu przeglądarki i wybierz opcję „Zainstaluj aplikację” lub „Dodaj do ekranu głównego”.',
         'install_already' => 'Aplikacja jest już zainstalowana.',
         'install_ios_title' => 'Zainstaluj na iOS',
-        'install_ios_body' => 'Otwórz tę stronę w przeglądarce Safari, wybierz opcję „Udostępnij”, a następnie „Dodaj do ekranu głównego”..',
+        'install_ios_body' => 'Otwórz tę stronę w przeglądarce Safari, wybierz opcję „Udostępnij”, a następnie „Dodaj do ekranu głównego”.',
         'png_required' => 'Ikony PNG są wymagane dla systemu Android i powiadomień.',
     ],
     'profile' => [
         'tab_label' => 'PWA',
         'section_heading' => 'Akcje PWA',
-        'section_description' => 'Manage your device connection and notifications.',
+        'section_description' => 'Zarządzaj swoimi połączonymi urządzeniami oraz powiadomieniami.',
     ],
     'messages' => [
         'update_available' => 'Nowa wersja jest dostępna. Przeładować teraz?',
