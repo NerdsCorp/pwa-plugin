@@ -36,6 +36,9 @@ class PwaPushController extends Controller
             ], 401);
         }
 
+        $endpoint = $request->string('endpoint')->toString();
+        $endpointHash = hash('sha256', $endpoint);
+
         $subscription = PwaPushSubscription::query()->updateOrCreate(
             [
                 'endpoint' => $request->string('endpoint')->toString(),
@@ -75,8 +78,12 @@ class PwaPushController extends Controller
             ], 401);
         }
 
+        $endpoint = $request->string('endpoint')->toString();
+        $endpointHash = hash('sha256', $endpoint);
+
         PwaPushSubscription::query()
-            ->where('endpoint', $request->string('endpoint')->toString())
+            ->where('endpoint_hash', $endpointHash)
+            ->where('endpoint', $endpoint)
             ->where('notifiable_type', $user->getMorphClass())
             ->where('notifiable_id', $user->getKey())
             ->delete();

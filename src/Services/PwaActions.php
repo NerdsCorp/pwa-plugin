@@ -17,7 +17,7 @@ class PwaActions
             ->extraAttributes(['class' => 'gap-4'])
             ->schema([
                 SchemaActions::make([
-                    Action::make('install')
+                    Action::make('exclude_install')
                         ->label(trans('pwa-plugin::pwa-plugin.actions.install'))
                         ->icon('heroicon-o-arrow-down-tray')
                         ->color('success')
@@ -37,12 +37,12 @@ class PwaActions
                                 ->send();
                         })
                         ->extraAttributes([
-                            'onclick' => "if(!window.triggerPwaInstall?.()){ \$wire.call('mountAction', 'install'); } return false;",
+                            'onclick' => "if(!window.triggerPwaInstall?.()){ \$wire.call('mountAction', 'exclude_install'); } return false;",
                         ]),
                 ])->fullWidth(),
 
                 SchemaActions::make([
-                    Action::make('notifications')
+                    Action::make('exclude_notifications')
                         ->label(trans('pwa-plugin::pwa-plugin.actions.request_notifications'))
                         ->icon('heroicon-o-bell-snooze')
                         ->color('info')
@@ -50,7 +50,7 @@ class PwaActions
                 ])->fullWidth(),
 
                 SchemaActions::make([
-                    Action::make('subscribe')
+                    Action::make('exclude_subscribe')
                         ->label(trans('pwa-plugin::pwa-plugin.actions.subscribe'))
                         ->icon('heroicon-o-check-circle')
                         ->color('primary')
@@ -58,7 +58,7 @@ class PwaActions
                 ])->fullWidth(),
 
                 SchemaActions::make([
-                    Action::make('unsubscribe')
+                    Action::make('exclude_unsubscribe')
                         ->label(trans('pwa-plugin::pwa-plugin.actions.unsubscribe'))
                         ->icon('heroicon-o-x-circle')
                         ->color('danger')
@@ -66,7 +66,7 @@ class PwaActions
                 ])->fullWidth(),
 
                 SchemaActions::make([
-                    Action::make('test')
+                    Action::make('exclude_test')
                         ->label(trans('pwa-plugin::pwa-plugin.actions.test_push'))
                         ->icon('heroicon-o-paper-airplane')
                         ->color('warning')
