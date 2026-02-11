@@ -73,7 +73,7 @@ class PwaActions
                         ->visible(fn () => app(PwaSettingsRepository::class)->get('push_enabled', config('pwa-plugin.push_enabled', false)) ?? false)
                         ->action(fn () => Notification::make()->title(trans('pwa-plugin::pwa-plugin.notifications.test_sent'))->success()->send())
                         ->extraAttributes(['onclick' => <<<'JS'
-                            const btn = event.target;
+                            const btn = event.currentTarget;
                             btn.disabled = true;
                             fetch(window.pwaConfig.routes.test, {
                                 method: 'POST',
