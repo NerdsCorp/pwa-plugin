@@ -1,0 +1,46 @@
+name: Update Release JSON
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  update-json:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: main  # or your default branch name
+          token: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Update update.json
+        run: |
+          # Extract version from the release tag (removes 'v' prefix if present)
+          VERSION="${{ github.event.release.tag_name }}"
+          VERSION="${VERSION#v}"
+          
+          # Get repository info
+          REPO="${{ github.repository }}"
+          
+          # Create the JSON content
+          cat > update.json << EOF
+          {
+            "*": {
+              "version": "$VERSION",
+              "download_url": "https://github.com/$REPO/archive/refs/tags/${{ github.event.release.tag_name }}.zip"
+            }
+          }
+          EOF
+          
+          echo "Updated update.json with version $VERSION"
+          cat update.json
+      
+      - name: Commit and push changes
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add update.json
+          git commit -m "Update update.json to version ${{ github.event.release.tag_name }}" || echo "No changes to commit"
+          git push
