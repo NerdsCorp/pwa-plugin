@@ -1,15 +1,19 @@
 {
-    "id": "pwa-plugin",
-    "name": "Progressive Web App",
-    "author": "Kristopher Reeves (Dr.Reeves)",
-    "version": "1.4.0",
-    "description": "Adds Progressive Web App (PWA) functionality with push notification support, allowing users to install the panel as a native app and receive near real-time browser notifications.",
-    "category": "plugin",
-    "namespace": "PwaPlugin",
-    "class": "PwaPlugin",
-    "panels": ["admin", "app", "server"],
-    "update_url": "https://raw.githubusercontent.com/NerdsCorp/pwa-plugin/refs/heads/main/update.json",
-    "composer_packages": {
-        "minishlink/web-push": "^9.0"
-    }
+  "id": "pwa-plugin",
+  "name": "Progressive Web App",
+  "author": "Kristopher Reeves (Dr.Reeves)",
+  "version": "1.4.1",
+  "description": "Adds Progressive Web App (PWA) functionality with push notification support, allowing users to install the panel as a native app and receive near real-time browser notifications.",
+  "category": "plugin",
+  "namespace": "PwaPlugin",
+  "class": "PwaPlugin",
+  "panels": [
+    "admin",
+    "app",
+    "server"
+  ],
+  "update_url": "https://raw.githubusercontent.com/NerdsCorp/pwa-plugin/refs/heads/main/update.json",
+  "composer_packages": {
+    "minishlink/web-push": "^9.0"
+  }
 }
