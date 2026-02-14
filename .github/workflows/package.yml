@@ -27,4 +27,3 @@ jobs:
         with:
           name: pwa-plugin
           path: pwa-plugin.zip
-          retention-days: 90
