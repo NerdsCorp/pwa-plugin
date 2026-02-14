@@ -43,6 +43,9 @@ jobs:
       - name: Create zip archive
         run: |
           zip -r pwa-plugin.zip pwa-plugin/
+
+      - name: Verify package archive
+        run: ls -lah pwa-plugin.zip
       
       - name: Upload artifact
         uses: actions/upload-artifact@v4
@@ -51,7 +54,8 @@ jobs:
           path: pwa-plugin.zip
       
       - name: Upload to release
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          gh release upload ${{ steps.release.outputs.tag }} pwa-plugin.zip --clobber
+        if: github.event_name == 'release'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.release.outputs.tag }}
+          files: pwa-plugin.zip
