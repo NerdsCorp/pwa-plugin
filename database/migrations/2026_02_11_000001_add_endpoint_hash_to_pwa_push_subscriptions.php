@@ -35,7 +35,7 @@ return new class extends Migration
             });
 
         $this->dropUniqueIndexIfExists('pwa_push_subscriptions', 'pwa_push_subscriptions_endpoint_unique');
-        $this->dropUniqueIndexIfExists('pwa_push_subscriptions', 'pwa_push_subscriptions_endpoint_notifiable_type_notifiable_id_unique');
+        $this->dropUniqueIndexIfExists('pwa_push_subscriptions', 'pwa_endpoint_notifiable_unique');
         $this->dropUniqueIndexIfExists('pwa_push_subscriptions', 'endpoint_notifiable_unique');
         $this->addUniqueIndexIfMissing('pwa_push_subscriptions', 'endpoint_hash', 'pwa_push_subscriptions_endpoint_hash_unique');
     }

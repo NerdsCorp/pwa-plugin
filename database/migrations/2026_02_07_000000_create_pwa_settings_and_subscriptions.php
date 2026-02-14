@@ -31,7 +31,7 @@ return new class extends Migration
                 $table->timestamps();
 
                 $table->index(['notifiable_type', 'notifiable_id']);
-                $table->unique(['endpoint', 'notifiable_type', 'notifiable_id']);
+                $table->unique(['endpoint', 'notifiable_type', 'notifiable_id'], 'pwa_endpoint_notifiable_unique');
             });
         }
     }
