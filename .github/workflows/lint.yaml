@@ -1,12 +1,14 @@
 name: Lint
 on:
   pull_request:
-    branches:
-      - "**"
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - ready_for_review
   push:
     branches:
-      - main
-      - develop
+      - "**"
 
 jobs:
   pint:

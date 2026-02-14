@@ -2,11 +2,13 @@ name: Update Release JSON
 
 on:
   release:
-    types: [published, created, released]
-  # Uncomment below for testing with tags (remove after testing)
-  # push:
-  #   tags:
-  #     - '*'
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Release tag to publish metadata for (for example v1.4.0)
+        required: true
+        type: string
 
 permissions:
   contents: write
@@ -14,53 +16,52 @@ permissions:
 jobs:
   update-json:
     runs-on: ubuntu-latest
-    
+
     steps:
-      - name: Debug - Print event info
-        run: |
-          echo "Event name: ${{ github.event_name }}"
-          echo "Release tag: ${{ github.event.release.tag_name }}"
-          echo "Repository: ${{ github.repository }}"
-          echo "Ref: ${{ github.ref }}"
-      
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           ref: ${{ github.event.repository.default_branch }}
           token: ${{ secrets.GITHUB_TOKEN }}
-      
-      - name: Update update.json
+
+      - name: Resolve release version
+        id: release
         run: |
-          # Extract version from the release tag (removes 'v' prefix if present)
-          VERSION="${{ github.event.release.tag_name }}"
+          TAG="${{ github.event.release.tag_name || inputs.tag }}"
+          VERSION="$TAG"
           VERSION="${VERSION#v}"
-          
-          # Get repository info
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Update plugin.json and update.json
+        run: |
           REPO="${{ github.repository }}"
-          
-          # Create the JSON content
+          TAG="${{ steps.release.outputs.tag }}"
+          VERSION="${{ steps.release.outputs.version }}"
+          DOWNLOAD_URL="https://github.com/$REPO/releases/download/$TAG/pwa-plugin.zip"
+
+          jq --arg version "$VERSION" '.version = $version' plugin.json > plugin.json.tmp
+          mv plugin.json.tmp plugin.json
+
           cat > update.json << EOF
           {
             "*": {
               "version": "$VERSION",
-              "download_url": "https://github.com/$REPO/archive/refs/tags/${{ github.event.release.tag_name }}.zip"
+              "download_url": "$DOWNLOAD_URL"
             }
           }
           EOF
-          
-          echo "✓ Updated update.json with version $VERSION"
-          cat update.json
-      
+
       - name: Commit and push changes
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
-          git add update.json
-          
+          git add plugin.json update.json
+
           if git diff --staged --quiet; then
             echo "No changes to commit"
           else
-            git commit -m "Update update.json to version ${{ github.event.release.tag_name }}"
+            git commit -m "Update release metadata to version ${{ steps.release.outputs.version }}"
             git push
-            echo "✓ Changes pushed successfully"
+            echo "Changes pushed successfully"
           fi

@@ -4,6 +4,11 @@ on:
   release:
     types: [published]
   workflow_dispatch:
+    inputs:
+      tag:
+        description: Release tag to package (for example v1.4.0)
+        required: true
+        type: string
 
 permissions:
   contents: write
@@ -15,6 +20,20 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Resolve release version
+        id: release
+        run: |
+          TAG="${{ github.event.release.tag_name || inputs.tag }}"
+          VERSION="${TAG#v}"
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Update plugin.json version for package
+        run: |
+          jq --arg version "${{ steps.release.outputs.version }}" \
+            '.version = $version' plugin.json > plugin.json.tmp
+          mv plugin.json.tmp plugin.json
       
       - name: Create pwa-plugin directory structure
         run: |
@@ -35,4 +54,4 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release upload ${{ github.event.release.tag_name }} pwa-plugin.zip --clobber
+          gh release upload ${{ steps.release.outputs.tag }} pwa-plugin.zip --clobber
