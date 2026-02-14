@@ -14,14 +14,10 @@ permissions:
   contents: write
 
 jobs:
-  update-metadata:
+  package:
     runs-on: ubuntu-latest
     env:
       DEFAULT_BRANCH: ${{ github.event.repository.default_branch || 'main' }}
-    outputs:
-      tag: ${{ steps.release.outputs.tag }}
-      version: ${{ steps.release.outputs.version }}
-      default_branch: ${{ env.DEFAULT_BRANCH }}
     steps:
       - name: Checkout default branch
         uses: actions/checkout@v4
@@ -59,10 +55,7 @@ jobs:
           }
           EOF
 
-          echo "plugin.json version: $(jq -r '.version' plugin.json)"
-          echo "update.json version: $(jq -r '.[\"*\"].version' update.json)"
-
-      - name: Commit metadata changes
+      - name: Commit and push metadata to default branch
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
@@ -76,42 +69,24 @@ jobs:
             git push origin "HEAD:${DEFAULT_BRANCH}"
           fi
 
-  package:
-    runs-on: ubuntu-latest
-    needs: update-metadata
-    env:
-      DEFAULT_BRANCH: ${{ needs.update-metadata.outputs.default_branch }}
-      RELEASE_TAG: ${{ needs.update-metadata.outputs.tag }}
-      RELEASE_VERSION: ${{ needs.update-metadata.outputs.version }}
-    steps:
-      - name: Checkout updated default branch
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ env.DEFAULT_BRANCH }}
-          fetch-depth: 0
-          token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Force release versions before packaging
+      - name: Verify default branch versions before packaging
         run: |
-          REPO="${{ github.repository }}"
-          TAG="${RELEASE_TAG}"
-          VERSION="${RELEASE_VERSION}"
-          DOWNLOAD_URL="https://github.com/$REPO/releases/download/$TAG/pwa-plugin.zip"
+          VERSION="${{ steps.release.outputs.version }}"
+          git fetch origin "${DEFAULT_BRANCH}"
 
-          jq --arg version "$VERSION" '.version = $version' plugin.json > plugin.json.tmp
-          mv plugin.json.tmp plugin.json
+          MAIN_PLUGIN_VERSION="$(git show "origin/${DEFAULT_BRANCH}:plugin.json" | jq -r '.version')"
+          MAIN_UPDATE_VERSION="$(git show "origin/${DEFAULT_BRANCH}:update.json" | jq -r '.[\"*\"].version')"
 
-          cat > update.json << EOF
-          {
-            "*": {
-              "version": "$VERSION",
-              "download_url": "$DOWNLOAD_URL"
-            }
-          }
-          EOF
+          echo "main plugin.json version: $MAIN_PLUGIN_VERSION"
+          echo "main update.json version: $MAIN_UPDATE_VERSION"
 
-          echo "Packaging version: $(jq -r '.version' plugin.json)"
-          echo "Update manifest version: $(jq -r '.[\"*\"].version' update.json)"
+          test "$MAIN_PLUGIN_VERSION" = "$VERSION"
+          test "$MAIN_UPDATE_VERSION" = "$VERSION"
+
+      - name: Reset workspace to updated default branch
+        run: |
+          git checkout "${DEFAULT_BRANCH}"
+          git reset --hard "origin/${DEFAULT_BRANCH}"
 
       - name: Create pwa-plugin directory structure
         run: |
@@ -130,13 +105,10 @@ jobs:
           name: pwa-plugin
           path: pwa-plugin.zip
 
-      - name: Upload asset to release
+      - name: Upload zip to GitHub Release
         if: github.event_name == 'release'
-        uses: actions/upload-release-asset@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ github.event.release.upload_url }}
-          asset_path: ./pwa-plugin.zip
-          asset_name: pwa-plugin.zip
-          asset_content_type: application/zip
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh --version
+          gh release upload "${{ steps.release.outputs.tag }}" pwa-plugin.zip --repo "${{ github.repository }}" --clobber
