@@ -52,8 +52,7 @@ class PwaSettings extends Page implements HasSchemas
     {
         return trans('pwa-plugin::pwa-plugin.navigation.label');
     }
-
-    
+ 
     public static function getNavigationGroup(): string|\UnitEnum|null
     {
         return __('Advanced');
