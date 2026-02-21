@@ -30,7 +30,7 @@ class PwaSettings extends Page implements HasSchemas
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-device-phone-mobile';
 
     protected static ?int $navigationSort = 90;
-    
+
     public ?array $data = [];
 
     public function hasLogo(): bool
@@ -52,12 +52,12 @@ class PwaSettings extends Page implements HasSchemas
     {
         return trans('pwa-plugin::pwa-plugin.navigation.label');
     }
- 
+
     public static function getNavigationGroup(): string|\UnitEnum|null
     {
         return __('Advanced');
     }
-    
+
     public static function shouldRegisterNavigation(): bool
     {
         return Filament::getCurrentPanel()?->getId() === 'admin';
