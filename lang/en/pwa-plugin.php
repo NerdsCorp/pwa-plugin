@@ -136,6 +136,7 @@ return [
         'unsubscribed' => 'Successfully unsubscribed.',
         'test_sent' => 'Test notification has been sent.',
         'broadcast_queued' => 'Broadcast queued for :count subscription(s).',
+        'broadcast_sent' => 'Broadcast sent to :sent of :total subscription(s).',
     ],
     'errors' => [
         'table_missing' => 'Push subscriptions table is missing.',
