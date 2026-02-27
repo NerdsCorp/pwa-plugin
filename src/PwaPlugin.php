@@ -383,11 +383,11 @@ HTML;
         \App\Filament\Pages\Auth\EditProfile::registerCustomTabs(
             TabPosition::After,
             Tab::make('pwa')
-                ->label(trans('pwa-plugin::pwa-plugin.profile.tab_label'))
+                ->label(fn (): string => trans('pwa-plugin::pwa-plugin.profile.tab_label'))
                 ->icon('heroicon-o-device-phone-mobile')
                 ->schema([
-                    Section::make(trans('pwa-plugin::pwa-plugin.profile.section_heading'))
-                        ->description(trans('pwa-plugin::pwa-plugin.profile.section_description'))
+                    Section::make(fn (): string => trans('pwa-plugin::pwa-plugin.profile.section_heading'))
+                        ->description(fn (): string => trans('pwa-plugin::pwa-plugin.profile.section_description'))
                         ->schema([
                             PwaActions::make(),
                         ]),

@@ -18,7 +18,7 @@ class PwaActions
             ->schema([
                 SchemaActions::make([
                     Action::make('exclude_install')
-                        ->label(trans('pwa-plugin::pwa-plugin.actions.install'))
+                        ->label(fn (): string => trans('pwa-plugin::pwa-plugin.actions.install'))
                         ->icon('heroicon-o-arrow-down-tray')
                         ->color('success')
                         ->action(function () {
@@ -43,7 +43,7 @@ class PwaActions
 
                 SchemaActions::make([
                     Action::make('exclude_notifications')
-                        ->label(trans('pwa-plugin::pwa-plugin.actions.request_notifications'))
+                        ->label(fn (): string => trans('pwa-plugin::pwa-plugin.actions.request_notifications'))
                         ->icon('heroicon-o-bell-snooze')
                         ->color('info')
                         ->extraAttributes(['onclick' => 'window.pwaRequestNotifications?.(); return false;']),
@@ -51,7 +51,7 @@ class PwaActions
 
                 SchemaActions::make([
                     Action::make('exclude_subscribe')
-                        ->label(trans('pwa-plugin::pwa-plugin.actions.subscribe'))
+                        ->label(fn (): string => trans('pwa-plugin::pwa-plugin.actions.subscribe'))
                         ->icon('heroicon-o-check-circle')
                         ->color('primary')
                         ->extraAttributes(['onclick' => 'window.pwaRegisterPush?.(); return false;']),
@@ -59,7 +59,7 @@ class PwaActions
 
                 SchemaActions::make([
                     Action::make('exclude_unsubscribe')
-                        ->label(trans('pwa-plugin::pwa-plugin.actions.unsubscribe'))
+                        ->label(fn (): string => trans('pwa-plugin::pwa-plugin.actions.unsubscribe'))
                         ->icon('heroicon-o-x-circle')
                         ->color('danger')
                         ->extraAttributes(['onclick' => 'window.pwaUnregisterPush?.(); return false;']),
@@ -67,7 +67,7 @@ class PwaActions
 
                 SchemaActions::make([
                     Action::make('exclude_test')
-                        ->label(trans('pwa-plugin::pwa-plugin.actions.test_push'))
+                        ->label(fn (): string => trans('pwa-plugin::pwa-plugin.actions.test_push'))
                         ->icon('heroicon-o-paper-airplane')
                         ->color('warning')
                         ->visible(fn () => app(PwaSettingsRepository::class)->get('push_enabled', config('pwa-plugin.push_enabled', false)) ?? false)
