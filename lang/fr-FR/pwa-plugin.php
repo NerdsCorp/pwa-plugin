@@ -23,11 +23,11 @@ return [
     'fields' => [
         'theme_color' => [
             'label' => 'Couleur du thème',
-            'helper' => 'Utilisée par le manifest et l\'interface utilisateur du navigateur.',
+            'helper' => 'Utilisée par le manifest et l’interface utilisateur du navigateur.',
         ],
         'background_color' => [
             'label' => 'Couleur de fond',
-            'helper' => 'Couleur d\'arrière-plan de l\'écran de chargement.',
+            'helper' => 'Couleur d’arrière-plan de l’écran de chargement.',
         ],
         'start_url' => [
             'label' => 'Start-URL',
@@ -46,7 +46,7 @@ return [
         ],
         'cache_precache_urls' => [
             'label' => 'URLs à précharger',
-            'helper' => 'Liste d\'URLs à précharger, séparées par des virgules ou des sauts de ligne (ex. /, /).',
+            'helper' => 'Liste d’URLs à précharger, séparées par des virgules ou des sauts de ligne (ex. /, /).',
         ],
         'manifest_icon_192' => [
             'label' => 'Manifest icon (192x192)',
@@ -104,7 +104,7 @@ return [
         ],
         'vapid_subject' => [
             'label' => 'Sujet VAPID',
-            'helper' => 'Il s\'agit généralement d\'une URL mailto: ou https:, par exemple mailto:admin@example.com',
+            'helper' => 'Il s’agit généralement d’une URL mailto: ou https:, par exemple mailto:admin@example.com',
         ],
         'vapid_public_key' => [
             'label' => 'Clé publique VAPID',
@@ -124,7 +124,7 @@ return [
     'actions' => [
         'install' => 'Installer PWA',
         'request_notifications' => 'Activer les notifications',
-        'subscribe' => 'S\'abonner',
+        'subscribe' => 'S’abonner',
         'unsubscribe' => 'Se désabonner',
         'test_push' => 'Envoyer une notification de test',
         'send_broadcast' => 'Envoyer une diffusion à tous',
@@ -135,7 +135,7 @@ return [
         'subscribed' => 'Abonné aux notifications push avec succès.',
         'unsubscribed' => 'Désabonné avec succès.',
         'test_sent' => 'Notification de test envoyée.',
-        'broadcast_queued' => 'Diffusion mise en file d\'attente pour :count abonnement(s).',
+        'broadcast_queued' => 'Diffusion mise en file d’attente pour :count abonnement(s).',
         'broadcast_sent' => 'Diffusion envoyée à :sent sur :total abonnement(s).',
     ],
     'errors' => [
@@ -144,15 +144,15 @@ return [
         'library_missing' => 'La bibliothèque Web Push est introuvable.',
         'vapid_missing' => 'Les clés VAPID ou le sujet sont manquants.',
         'no_subscription' => 'Aucun abonnement trouvé pour ce navigateur.',
-        'send_failed' => 'Échec de l\'envoi de la notification.',
+        'send_failed' => 'Échec de l’envoi de la notification.',
         'push_disabled' => 'Les notifications push sont désactivées dans les paramètres.',
         'broadcast_required' => 'Le titre et le message de diffusion sont requis.',
-        'unsupported' => 'L\'installation est actuellement impossible. L\'application est peut-être déjà installée ou votre navigateur ne répond pas aux exigences.',
+        'unsupported' => 'L’installation est actuellement impossible. L’application est peut-être déjà installée ou votre navigateur ne répond pas aux exigences.',
         'install_android_title' => 'Installer sur Android',
-        'install_android_body' => 'Ouvrez le menu du navigateur et appuyez sur « Installer l\'application » ou « Ajouter à l\'écran d\'accueil ».',
-        'install_already' => 'L\'application est déjà installée.',
+        'install_android_body' => 'Ouvrez le menu du navigateur et appuyez sur « Installer l’application » ou « Ajouter à l’écran d’accueil ».',
+        'install_already' => 'L’application est déjà installée.',
         'install_ios_title' => 'Installer sur iOS',
-        'install_ios_body' => 'Ouvrez cette page dans Safari, appuyez sur Partager, puis « Ajouter à l\'écran d\'accueil ».',
+        'install_ios_body' => 'Ouvrez cette page dans Safari, appuyez sur Partager, puis « Ajouter à l’écran d’accueil ».',
         'png_required' => 'Les icônes PNG sont requises pour Android et les notifications.',
     ],
     'profile' => [
@@ -173,22 +173,22 @@ return [
             'subscriptions_per_user' => 'Abonnements par utilisateur',
             'last_push_sent' => 'Dernière notification envoyée',
             'last_sync_server' => 'Dernière synchronisation (serveur)',
-            'last_subscription_refresh_server' => 'Dernière actualisation de l\'abonnement (serveur)',
-            'queue_readiness' => 'Préparation de la file d\'attente',
+            'last_subscription_refresh_server' => 'Dernière actualisation de l’abonnement (serveur)',
+            'queue_readiness' => 'Préparation de la file d’attente',
             'push_stack' => 'Pile de notifications',
             'connection' => 'connexion',
             'background' => 'arrière-plan',
             'enabled' => 'activé',
             'library' => 'bibliothèque',
             'vapid' => 'vapid',
-            'queue' => 'file d\'attente',
+            'queue' => 'file d’attente',
             'push' => 'push',
             'subscribers' => 'abonnés',
             'activity' => 'activité',
         ],
         'status' => [
             'healthy' => 'en bonne santé',
-            'needs_attention' => 'besoin d\'attention',
+            'needs_attention' => 'besoin d’attention',
             'ready' => 'prêt',
             'not_ready' => 'non prêt',
             'incomplete' => 'incomplet',
@@ -206,7 +206,7 @@ return [
         'new_notification' => 'Vous avez une nouvelle notification.',
     ],
     'manifest' => [
-        'description' => 'L\'application officielle de notre panel.',
+        'description' => 'L’application officielle de notre panel.',
         'shortcuts' => [
             'dashboard_name' => 'Tableau de bord',
             'dashboard_short' => 'Tableau de bord',
