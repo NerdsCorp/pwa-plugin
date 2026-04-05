@@ -1,15 +1,19 @@
 <?php
 
+declare(strict_types=1);
+
 namespace PwaPlugin\Services;
 
+use Minishlink\WebPush\Subscription;
+use Minishlink\WebPush\WebPush;
 use PwaPlugin\Models\PwaPushSubscription;
 
 class PwaPushService
 {
     public function canSend(): bool
     {
-        return class_exists(\Minishlink\WebPush\WebPush::class)
-            && class_exists(\Minishlink\WebPush\Subscription::class);
+        return class_exists(WebPush::class)
+            && class_exists(Subscription::class);
     }
 
     public function sendToSubscription(PwaPushSubscription $subscription, array $payload, array $vapid): bool
@@ -18,19 +22,19 @@ class PwaPushService
             return false;
         }
 
-        $webPush = new \Minishlink\WebPush\WebPush([
+        $webPush = new WebPush([
             'VAPID' => $vapid,
         ]);
 
         $webPush->queueNotification(
-            \Minishlink\WebPush\Subscription::create([
+            Subscription::create([
                 'endpoint' => $subscription->endpoint,
                 'keys' => [
                     'p256dh' => $subscription->public_key,
                     'auth' => $subscription->auth_token,
                 ],
             ]),
-            json_encode($payload, JSON_UNESCAPED_SLASHES)
+            json_encode($payload, JSON_UNESCAPED_SLASHES),
         );
 
         foreach ($webPush->flush() as $report) {

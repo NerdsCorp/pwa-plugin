@@ -1,9 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace PwaPlugin\Services;
 
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Schema;
+use Minishlink\WebPush\VAPID;
 use PwaPlugin\Models\PwaSetting;
 use Throwable;
 
@@ -57,7 +60,7 @@ class PwaSettingsRepository
             return;
         }
 
-        if (!class_exists(\Minishlink\WebPush\VAPID::class)) {
+        if (!class_exists(VAPID::class)) {
             return;
         }
 
@@ -68,7 +71,7 @@ class PwaSettingsRepository
             return;
         }
 
-        $keys = \Minishlink\WebPush\VAPID::createVapidKeys();
+        $keys = VAPID::createVapidKeys();
 
         $this->setMany([
             'vapid_public_key' => $keys['publicKey'] ?? '',

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 // PHPStan bootstrap file - provides stubs for Laravel/Filament classes
 // These classes will be available at runtime when the plugin is loaded
 
@@ -30,7 +32,7 @@ namespace Illuminate\Support {
 }
 
 namespace Illuminate\Foundation\Support\Providers {
-    class RouteServiceProvider extends \Illuminate\Support\ServiceProvider
+    class RouteServiceProvider extends Illuminate\Support\ServiceProvider
     {
         protected function routes(callable $callback) {}
     }
