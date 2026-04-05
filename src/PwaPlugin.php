@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace PwaPlugin;
 
+use App\Contracts\Plugins\HasPluginSettings;
 use App\Enums\TabPosition;
 use App\Filament\Pages\Auth\EditProfile;
-use App\Contracts\Plugins\HasPluginSettings;
 use App\Traits\EnvironmentWriterTrait;
 use Filament\Contracts\Plugin as PluginContract;
 use Filament\Notifications\Notification;
