@@ -32,7 +32,7 @@ namespace Illuminate\Support {
 }
 
 namespace Illuminate\Foundation\Support\Providers {
-    class RouteServiceProvider extends Illuminate\Support\ServiceProvider
+    class RouteServiceProvider extends \Illuminate\Support\ServiceProvider
     {
         protected function routes(callable $callback) {}
     }

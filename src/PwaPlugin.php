@@ -5,14 +5,15 @@ declare(strict_types=1);
 namespace PwaPlugin;
 
 use App\Enums\TabPosition;
+use App\Filament\Pages\Auth\EditProfile;
 use Filament\Contracts\Plugin as PluginContract;
 use Filament\Panel;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Tabs\Tab;
+use Illuminate\Support\HtmlString;
 use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\View;
-use Illuminate\Support\HtmlString;
 use PwaPlugin\Filament\Pages\PwaBroadcast;
 use PwaPlugin\Filament\Pages\PwaSettings;
 use PwaPlugin\Services\PwaActions;
@@ -374,7 +375,7 @@ HTML;
 
     private function registerProfileCustomizationTab(): void
     {
-        if (!class_exists(\App\Filament\Pages\Auth\EditProfile::class)) {
+        if (!class_exists(EditProfile::class)) {
             return;
         }
 
@@ -382,7 +383,7 @@ HTML;
             return;
         }
 
-        \App\Filament\Pages\Auth\EditProfile::registerCustomTabs(
+        EditProfile::registerCustomTabs(
             TabPosition::After,
             Tab::make('pwa')
                 ->label(fn (): string => trans('pwa-plugin::pwa-plugin.profile.tab_label'))
