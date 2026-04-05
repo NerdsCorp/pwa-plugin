@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace PwaPlugin;
 
 use App\Contracts\Plugins\HasPluginSettings;
+use App\Traits\EnvironmentWriterTrait;
 use App\Enums\TabPosition;
 use App\Filament\Pages\Auth\EditProfile;
 use Filament\Contracts\Plugin as PluginContract;
+use Filament\Notifications\Notification;
 use Filament\Panel;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Tabs\Tab;
@@ -22,6 +24,8 @@ use PwaPlugin\Services\PwaSettingsRepository;
 
 class PwaPlugin implements HasPluginSettings, PluginContract
 {
+    use EnvironmentWriterTrait;
+
     public function getId(): string
     {
         return 'pwa-plugin';
@@ -53,7 +57,22 @@ class PwaPlugin implements HasPluginSettings, PluginContract
 
     public function saveSettings(array $data): void
     {
-        PwaSettings::savePluginSettings($data, app(PwaSettingsRepository::class));
+        $invalidPngFields = PwaSettings::validatePngFields($data);
+
+        if ($invalidPngFields !== []) {
+            Notification::make()
+                ->title(trans('pwa-plugin::pwa-plugin.errors.png_required'))
+                ->body(implode(', ', $invalidPngFields))
+                ->warning()
+                ->send();
+        }
+
+        $this->writeToEnvironment(PwaSettings::toEnvironmentVariables($data));
+
+        Notification::make()
+            ->title(trans('pwa-plugin::pwa-plugin.notifications.saved'))
+            ->success()
+            ->send();
     }
 
     private function registerHeadHook(Panel $panel): void

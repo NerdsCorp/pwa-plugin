@@ -85,3 +85,10 @@ namespace App\Contracts\Plugins {
         public function saveSettings(array $data): void;
     }
 }
+
+namespace App\Traits {
+    trait EnvironmentWriterTrait
+    {
+        public function writeToEnvironment(array $values = []): void {}
+    }
+}

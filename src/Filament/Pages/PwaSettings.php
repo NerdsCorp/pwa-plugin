@@ -77,8 +77,6 @@ class PwaSettings extends Page implements HasSchemas
 
     public static function loadPluginSettings(PwaSettingsRepository $settings): array
     {
-        $settings->ensureVapidKeys();
-
         return $settings->allWithDefaults(self::defaultSettings());
     }
 
@@ -143,6 +141,8 @@ class PwaSettings extends Page implements HasSchemas
 
     private static function pluginSettingsSchema(array $syncDiagnostics): array
     {
+        $defaults = self::loadPluginSettings(app(PwaSettingsRepository::class));
+
         return [
             Tabs::make('Settings')
                 ->tabs([
@@ -154,61 +154,74 @@ class PwaSettings extends Page implements HasSchemas
                                 ColorPicker::make('theme_color')
                                     ->label(trans('pwa-plugin::pwa-plugin.fields.theme_color.label'))
                                     ->helperText(trans('pwa-plugin::pwa-plugin.fields.theme_color.helper'))
+                                    ->default($defaults['theme_color'])
                                     ->required(),
                                 ColorPicker::make('background_color')
                                     ->label(trans('pwa-plugin::pwa-plugin.fields.background_color.label'))
                                     ->helperText(trans('pwa-plugin::pwa-plugin.fields.background_color.helper'))
+                                    ->default($defaults['background_color'])
                                     ->required(),
                                 TextInput::make('start_url')
                                     ->label(trans('pwa-plugin::pwa-plugin.fields.start_url.label'))
                                     ->helperText(trans('pwa-plugin::pwa-plugin.fields.start_url.helper'))
+                                    ->default($defaults['start_url'])
                                     ->required()
                                     ->maxLength(255),
                                 TextInput::make('cache_name')
                                     ->label(trans('pwa-plugin::pwa-plugin.fields.cache_name.label'))
                                     ->helperText(trans('pwa-plugin::pwa-plugin.fields.cache_name.helper'))
+                                    ->default($defaults['cache_name'])
                                     ->required()
                                     ->maxLength(255),
                             ]),
                             TextInput::make('cache_version')
                                 ->label(trans('pwa-plugin::pwa-plugin.fields.cache_version.label'))
+                                ->default($defaults['cache_version'])
                                 ->numeric()
                                 ->required(),
                             Toggle::make('cache_enabled')
                                 ->label(trans('pwa-plugin::pwa-plugin.fields.cache_enabled.label'))
+                                ->default($defaults['cache_enabled'])
                                 ->helperText(trans('pwa-plugin::pwa-plugin.fields.cache_enabled.helper')),
                             Textarea::make('cache_precache_urls')
                                 ->label(trans('pwa-plugin::pwa-plugin.fields.cache_precache_urls.label'))
                                 ->helperText(trans('pwa-plugin::pwa-plugin.fields.cache_precache_urls.helper'))
+                                ->default($defaults['cache_precache_urls'])
                                 ->rows(4)
                                 ->visible(fn ($get) => $get('cache_enabled')),
                             Group::make()->columns(2)->schema([
                                 TextInput::make('manifest_icon_192')
                                     ->label(trans('pwa-plugin::pwa-plugin.fields.manifest_icon_192.label'))
                                     ->helperText(trans('pwa-plugin::pwa-plugin.fields.manifest_icon_192.helper'))
+                                    ->default($defaults['manifest_icon_192'])
                                     ->required()
                                     ->maxLength(255),
                                 TextInput::make('manifest_icon_512')
                                     ->label(trans('pwa-plugin::pwa-plugin.fields.manifest_icon_512.label'))
                                     ->helperText(trans('pwa-plugin::pwa-plugin.fields.manifest_icon_512.helper'))
+                                    ->default($defaults['manifest_icon_512'])
                                     ->required()
                                     ->maxLength(255),
                             ]),
                             Group::make()->columns(2)->schema([
                                 TextInput::make('apple_touch_icon')
                                     ->label(trans('pwa-plugin::pwa-plugin.fields.apple_touch_icon.label'))
+                                    ->default($defaults['apple_touch_icon'])
                                     ->required()
                                     ->maxLength(255),
                                 TextInput::make('apple_touch_icon_152')
                                     ->label(trans('pwa-plugin::pwa-plugin.fields.apple_touch_icon_152.label'))
+                                    ->default($defaults['apple_touch_icon_152'])
                                     ->required()
                                     ->maxLength(255),
                                 TextInput::make('apple_touch_icon_167')
                                     ->label(trans('pwa-plugin::pwa-plugin.fields.apple_touch_icon_167.label'))
+                                    ->default($defaults['apple_touch_icon_167'])
                                     ->required()
                                     ->maxLength(255),
                                 TextInput::make('apple_touch_icon_180')
                                     ->label(trans('pwa-plugin::pwa-plugin.fields.apple_touch_icon_180.label'))
+                                    ->default($defaults['apple_touch_icon_180'])
                                     ->required()
                                     ->maxLength(255),
                             ]),
@@ -220,28 +233,34 @@ class PwaSettings extends Page implements HasSchemas
                             Toggle::make('push_enabled')
                                 ->label(trans('pwa-plugin::pwa-plugin.fields.push_enabled.label'))
                                 ->helperText(trans('pwa-plugin::pwa-plugin.fields.push_enabled.helper'))
+                                ->default($defaults['push_enabled'])
                                 ->reactive(),
                             Toggle::make('push_send_on_database_notifications')
                                 ->label(trans('pwa-plugin::pwa-plugin.fields.push_send_on_db.label'))
+                                ->default($defaults['push_send_on_database_notifications'])
                                 ->helperText(trans('pwa-plugin::pwa-plugin.fields.push_send_on_db.helper')),
                             Toggle::make('push_send_on_mail_notifications')
                                 ->label(trans('pwa-plugin::pwa-plugin.fields.push_send_on_mail.label'))
+                                ->default($defaults['push_send_on_mail_notifications'])
                                 ->helperText(trans('pwa-plugin::pwa-plugin.fields.push_send_on_mail.helper')),
                             TextInput::make('vapid_subject')
                                 ->label(trans('pwa-plugin::pwa-plugin.fields.vapid_subject.label'))
                                 ->helperText(trans('pwa-plugin::pwa-plugin.fields.vapid_subject.helper'))
+                                ->default($defaults['vapid_subject'])
                                 ->required()
                                 ->maxLength(255)
                                 ->visible(fn ($get) => $get('push_enabled')),
                             Group::make()->columns(2)->schema([
                                 TextInput::make('vapid_public_key')
                                     ->label(trans('pwa-plugin::pwa-plugin.fields.vapid_public_key.label'))
+                                    ->default($defaults['vapid_public_key'])
                                     ->required()
                                     ->maxLength(255)
                                     ->visible(fn ($get) => $get('push_enabled')),
                                 TextInput::make('vapid_private_key')
                                     ->label(trans('pwa-plugin::pwa-plugin.fields.vapid_private_key.label'))
                                     ->password()
+                                    ->default($defaults['vapid_private_key'])
                                     ->required()
                                     ->maxLength(255)
                                     ->visible(fn ($get) => $get('push_enabled')),
@@ -250,11 +269,13 @@ class PwaSettings extends Page implements HasSchemas
                                 TextInput::make('default_notification_icon')
                                     ->label(trans('pwa-plugin::pwa-plugin.fields.default_notification_icon.label'))
                                     ->helperText(trans('pwa-plugin::pwa-plugin.fields.default_notification_icon.helper'))
+                                    ->default($defaults['default_notification_icon'])
                                     ->required()
                                     ->maxLength(255),
                                 TextInput::make('default_notification_badge')
                                     ->label(trans('pwa-plugin::pwa-plugin.fields.default_notification_badge.label'))
                                     ->helperText(trans('pwa-plugin::pwa-plugin.fields.default_notification_badge.helper'))
+                                    ->default($defaults['default_notification_badge'])
                                     ->required()
                                     ->maxLength(255),
                             ]),
@@ -333,7 +354,7 @@ class PwaSettings extends Page implements HasSchemas
     }
 
     /** @param array<string, mixed> $state */
-    private static function validatePngFields(array $state): array
+    public static function validatePngFields(array $state): array
     {
         $fields = [
             'manifest_icon_192' => trans('pwa-plugin::pwa-plugin.fields.manifest_icon_192.label'),
@@ -356,6 +377,35 @@ class PwaSettings extends Page implements HasSchemas
         }
 
         return $invalid;
+    }
+
+    public static function toEnvironmentVariables(array $state): array
+    {
+        self::applyUploads($state);
+
+        return [
+            'PWA_PLUGIN_THEME_COLOR' => (string) ($state['theme_color'] ?? self::defaultSettings()['theme_color']),
+            'PWA_PLUGIN_BACKGROUND_COLOR' => (string) ($state['background_color'] ?? self::defaultSettings()['background_color']),
+            'PWA_PLUGIN_START_URL' => (string) ($state['start_url'] ?? self::defaultSettings()['start_url']),
+            'PWA_PLUGIN_CACHE_NAME' => (string) ($state['cache_name'] ?? self::defaultSettings()['cache_name']),
+            'PWA_PLUGIN_CACHE_VERSION' => (string) ($state['cache_version'] ?? self::defaultSettings()['cache_version']),
+            'PWA_PLUGIN_CACHE_ENABLED' => ($state['cache_enabled'] ?? self::defaultSettings()['cache_enabled']) ? 'true' : 'false',
+            'PWA_PLUGIN_CACHE_PRECACHE_URLS' => (string) ($state['cache_precache_urls'] ?? self::defaultSettings()['cache_precache_urls']),
+            'PWA_PLUGIN_MANIFEST_ICON_192' => (string) ($state['manifest_icon_192'] ?? self::defaultSettings()['manifest_icon_192']),
+            'PWA_PLUGIN_MANIFEST_ICON_512' => (string) ($state['manifest_icon_512'] ?? self::defaultSettings()['manifest_icon_512']),
+            'PWA_PLUGIN_APPLE_TOUCH_ICON' => (string) ($state['apple_touch_icon'] ?? self::defaultSettings()['apple_touch_icon']),
+            'PWA_PLUGIN_APPLE_TOUCH_ICON_152' => (string) ($state['apple_touch_icon_152'] ?? self::defaultSettings()['apple_touch_icon_152']),
+            'PWA_PLUGIN_APPLE_TOUCH_ICON_167' => (string) ($state['apple_touch_icon_167'] ?? self::defaultSettings()['apple_touch_icon_167']),
+            'PWA_PLUGIN_APPLE_TOUCH_ICON_180' => (string) ($state['apple_touch_icon_180'] ?? self::defaultSettings()['apple_touch_icon_180']),
+            'PWA_PLUGIN_PUSH_ENABLED' => ($state['push_enabled'] ?? self::defaultSettings()['push_enabled']) ? 'true' : 'false',
+            'PWA_PLUGIN_PUSH_SEND_ON_DATABASE_NOTIFICATIONS' => ($state['push_send_on_database_notifications'] ?? self::defaultSettings()['push_send_on_database_notifications']) ? 'true' : 'false',
+            'PWA_PLUGIN_PUSH_SEND_ON_MAIL_NOTIFICATIONS' => ($state['push_send_on_mail_notifications'] ?? self::defaultSettings()['push_send_on_mail_notifications']) ? 'true' : 'false',
+            'PWA_PLUGIN_VAPID_PUBLIC_KEY' => (string) ($state['vapid_public_key'] ?? self::defaultSettings()['vapid_public_key']),
+            'PWA_PLUGIN_VAPID_PRIVATE_KEY' => (string) ($state['vapid_private_key'] ?? self::defaultSettings()['vapid_private_key']),
+            'PWA_PLUGIN_VAPID_SUBJECT' => (string) ($state['vapid_subject'] ?? self::defaultSettings()['vapid_subject']),
+            'PWA_PLUGIN_NOTIFICATION_ICON' => (string) ($state['default_notification_icon'] ?? self::defaultSettings()['default_notification_icon']),
+            'PWA_PLUGIN_NOTIFICATION_BADGE' => (string) ($state['default_notification_badge'] ?? self::defaultSettings()['default_notification_badge']),
+        ];
     }
 
     /** @param array<string, mixed> $state */
