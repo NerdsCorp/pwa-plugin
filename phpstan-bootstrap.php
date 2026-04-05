@@ -6,9 +6,7 @@ declare(strict_types=1);
 // These classes will be available at runtime when the plugin is loaded
 
 namespace Illuminate\Routing {
-    class Controller
-    {
-    }
+    class Controller {}
 }
 
 namespace Illuminate\Database\Eloquent {
@@ -43,9 +41,7 @@ namespace Illuminate\Foundation\Support\Providers {
 }
 
 namespace Illuminate\Contracts\Queue {
-    interface ShouldQueue
-    {
-    }
+    interface ShouldQueue {}
 }
 
 namespace Illuminate\Foundation\Bus {
@@ -56,41 +52,27 @@ namespace Illuminate\Foundation\Bus {
 }
 
 namespace Illuminate\Queue {
-    trait InteractsWithQueue
-    {
-    }
+    trait InteractsWithQueue {}
 
-    trait SerializesModels
-    {
-    }
+    trait SerializesModels {}
 }
 
 namespace Illuminate\Bus {
-    trait Queueable
-    {
-    }
+    trait Queueable {}
 }
 
 namespace Filament\Pages {
-    class Page
-    {
-    }
+    class Page {}
 }
 
 namespace Filament\Schemas\Contracts {
-    interface HasSchemas
-    {
-    }
+    interface HasSchemas {}
 }
 
 namespace Filament\Forms\Concerns {
-    trait InteractsWithForms
-    {
-    }
+    trait InteractsWithForms {}
 }
 
 namespace Filament\Contracts {
-    interface Plugin
-    {
-    }
+    interface Plugin {}
 }
