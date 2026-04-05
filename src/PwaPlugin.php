@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PwaPlugin;
 
+use App\Contracts\Plugins\HasPluginSettings;
 use App\Enums\TabPosition;
 use App\Filament\Pages\Auth\EditProfile;
 use Filament\Contracts\Plugin as PluginContract;
@@ -19,7 +20,7 @@ use PwaPlugin\Filament\Pages\PwaSettings;
 use PwaPlugin\Services\PwaActions;
 use PwaPlugin\Services\PwaSettingsRepository;
 
-class PwaPlugin implements PluginContract
+class PwaPlugin implements HasPluginSettings, PluginContract
 {
     public function getId(): string
     {
@@ -35,7 +36,6 @@ class PwaPlugin implements PluginContract
 
         if ($panel->getId() === 'admin') {
             $panel->pages([
-                PwaSettings::class,
                 PwaBroadcast::class,
             ]);
         }
@@ -44,6 +44,16 @@ class PwaPlugin implements PluginContract
     public function boot(Panel $panel): void
     {
         $this->registerProfileCustomizationTab();
+    }
+
+    public function getSettingsForm(): array
+    {
+        return PwaSettings::getPluginSettingsForm();
+    }
+
+    public function saveSettings(array $data): void
+    {
+        PwaSettings::savePluginSettings($data, app(PwaSettingsRepository::class));
     }
 
     private function registerHeadHook(Panel $panel): void
