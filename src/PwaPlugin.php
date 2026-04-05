@@ -4,19 +4,19 @@ declare(strict_types=1);
 
 namespace PwaPlugin;
 
-use App\Contracts\Plugins\HasPluginSettings;
-use App\Traits\EnvironmentWriterTrait;
 use App\Enums\TabPosition;
 use App\Filament\Pages\Auth\EditProfile;
+use App\Contracts\Plugins\HasPluginSettings;
+use App\Traits\EnvironmentWriterTrait;
 use Filament\Contracts\Plugin as PluginContract;
 use Filament\Notifications\Notification;
 use Filament\Panel;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Tabs\Tab;
+use Illuminate\Support\HtmlString;
 use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\View;
-use Illuminate\Support\HtmlString;
 use PwaPlugin\Filament\Pages\PwaBroadcast;
 use PwaPlugin\Filament\Pages\PwaSettings;
 use PwaPlugin\Services\PwaActions;
