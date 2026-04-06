@@ -8,7 +8,6 @@ use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Schema;
 use Minishlink\WebPush\VAPID;
 use PwaPlugin\Models\PwaSetting;
-use Throwable;
 
 class PwaSettingsRepository
 {
@@ -75,7 +74,7 @@ class PwaSettingsRepository
             if (in_array($key, ['vapid_private_key'], true) && is_string($value) && $value !== '') {
                 try {
                     return Crypt::decryptString($value);
-                } catch (Throwable) {
+                } catch (\Throwable) {
                     return $value;
                 }
             }
