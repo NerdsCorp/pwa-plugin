@@ -42,11 +42,12 @@ class PwaPushController extends Controller
 
         $subscription = PwaPushSubscription::query()->updateOrCreate(
             [
-                'endpoint' => $request->string('endpoint')->toString(),
+                'endpoint' => $endpoint,
                 'notifiable_type' => $user->getMorphClass(),
                 'notifiable_id' => $user->getKey(),
             ],
             [
+                'endpoint_hash' => $endpointHash,
                 'public_key' => $request->input('keys.p256dh'),
                 'auth_token' => $request->input('keys.auth'),
                 'content_encoding' => $request->input('contentEncoding') ?? 'aesgcm',
