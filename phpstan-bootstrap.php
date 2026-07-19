@@ -80,6 +80,8 @@ namespace Filament\Contracts {
 namespace App\Contracts\Plugins {
     interface HasPluginSettings
     {
+        public function getSettingsFormData(): array;
+
         public function getSettingsForm(): array;
 
         public function saveSettings(array $data): void;

@@ -55,6 +55,11 @@ class PwaPlugin implements HasPluginSettings, PluginContract
         return PwaSettings::getPluginSettingsForm();
     }
 
+    public function getSettingsFormData(): array
+    {
+        return PwaSettings::loadPluginSettings(app(PwaSettingsRepository::class));
+    }
+
     public function saveSettings(array $data): void
     {
         $invalidPngFields = PwaSettings::validatePngFields($data);
