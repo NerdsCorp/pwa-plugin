@@ -69,7 +69,7 @@ If `minishlink/web-push` wasn't installed automatically:
 
 ```bash
 cd /var/www/pelican
-composer require minishlink/web-push:^11.0 brick/math:^0.17.2 -W
+composer require minishlink/web-push:^11.0.0 brick/math:^0.17.2 -W
 ```
 
 ## Admin Pages
