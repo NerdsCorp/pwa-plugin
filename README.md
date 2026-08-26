@@ -1,3 +1,16 @@
+[![Stars](https://img.shields.io/github/stars/NerdsCorp/pwa-plugin?style=flat-square)](https://github.com/NerdsCorp/pwa-plugin/stargazers)
+[![Forks](https://img.shields.io/github/forks/NerdsCorp/pwa-plugin?style=flat-square)](https://github.com/NerdsCorp/pwa-plugin/network/members)
+[![Watchers](https://img.shields.io/github/watchers/NerdsCorp/pwa-plugin?style=flat-square)](https://github.com/NerdsCorp/pwa-plugin/watchers)
+[![Issues](https://img.shields.io/github/issues/NerdsCorp/pwa-plugin?style=flat-square)](https://github.com/NerdsCorp/pwa-plugin/issues)
+[![Pull Requests](https://img.shields.io/github/issues-pr/NerdsCorp/pwa-plugin?style=flat-square)](https://github.com/NerdsCorp/pwa-plugin/pulls)
+[![Contributors](https://img.shields.io/github/contributors/NerdsCorp/pwa-plugin?style=flat-square)](https://github.com/NerdsCorp/pwa-plugin/graphs/contributors)
+[![Last Commit](https://img.shields.io/github/last-commit/NerdsCorp/pwa-plugin?style=flat-square)](https://github.com/NerdsCorp/pwa-plugin/commits/main)
+[![Commit Activity](https://img.shields.io/github/commit-activity/m/NerdsCorp/pwa-plugin?style=flat-square)](https://github.com/NerdsCorp/pwa-plugin/commits/main)
+[![Release](https://img.shields.io/github/v/release/NerdsCorp/pwa-plugin?style=flat-square)](https://github.com/NerdsCorp/pwa-plugin/releases)
+[![Downloads](https://img.shields.io/github/downloads/NerdsCorp/pwa-plugin/total?style=flat-square)](https://github.com/NerdsCorp/pwa-plugin/releases)
+[![Repo Size](https://img.shields.io/github/repo-size/NerdsCorp/pwa-plugin?style=flat-square)](https://github.com/NerdsCorp/pwa-plugin)
+[![License](https://img.shields.io/github/license/NerdsCorp/pwa-plugin?style=flat-square)](https://github.com/NerdsCorp/pwa-plugin/blob/main/LICENSE)
+
 # PWA Plugin for Pelican Panel
 
 Transform your Pelican Panel into a full-fledged Progressive Web App. Users can install it like a native app and receive push notifications for all the important stuff.
