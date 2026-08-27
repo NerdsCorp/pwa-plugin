@@ -7,6 +7,7 @@ use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
 use PwaPlugin\Models\PwaPushSubscription;
+use PwaPlugin\Services\PwaNotificationPreferences;
 use PwaPlugin\Services\PwaPushService;
 use PwaPlugin\Services\PwaSettingsRepository;
 
@@ -70,14 +71,49 @@ class SendPwaPushOnDatabaseNotification
             return;
         }
 
+        $channel = $payload['channel'] ?? $this->guessChannelFromNotification($event);
+        if (!PwaNotificationPreferences::shouldDeliver($notifiable, $channel)) {
+            return;
+        }
+
         $subscriptions = PwaPushSubscription::query()
             ->where('notifiable_type', $notifiable->getMorphClass())
             ->where('notifiable_id', $notifiable->getKey())
             ->get();
 
+        $sent = 0;
         foreach ($subscriptions as $subscription) {
-            $this->push->sendToSubscription($subscription, $payload, $vapid);
+            if ($this->push->sendToSubscription($subscription, $payload, $vapid)) {
+                $sent++;
+            }
         }
+
+        if ($sent > 0) {
+            PwaNotificationPreferences::markDelivered($notifiable, $channel);
+        }
+    }
+
+    private function guessChannelFromNotification(NotificationSent $event): string
+    {
+        $notificationClass = $event->notification::class;
+
+        if (str_contains($notificationClass, 'Account')) {
+            return 'account';
+        }
+
+        if (str_contains($notificationClass, 'Server') || str_contains($notificationClass, 'AddedToServer') || str_contains($notificationClass, 'RemovedFromServer')) {
+            return 'server';
+        }
+
+        if (str_contains($notificationClass, 'Backup')) {
+            return 'backup';
+        }
+
+        if (str_contains($notificationClass, 'Mail')) {
+            return 'mail';
+        }
+
+        return 'other';
     }
 
     private function buildPayload(NotificationSent $event): ?array
@@ -155,6 +191,7 @@ class SendPwaPushOnDatabaseNotification
         $title = $data['title'] ?? $data['subject'] ?? $defaultTitle;
         $body = $data['body'] ?? $data['message'] ?? $defaultBody;
         $url = $data['url'] ?? $data['action_url'] ?? url('/');
+        $channel = $data['channel'] ?? $data['category'] ?? 'other';
 
         $icon = $this->assetOrUrl($this->settings->get('default_notification_icon', config('pwa-plugin.default_notification_icon', '/pelican.svg')));
         $badge = $this->assetOrUrl($this->settings->get('default_notification_badge', config('pwa-plugin.default_notification_badge', '/pelican.svg')));
@@ -166,6 +203,7 @@ class SendPwaPushOnDatabaseNotification
             'badge' => $data['badge'] ?? $badge,
             'url' => $url,
             'tag' => $data['tag'] ?? null,
+            'channel' => PwaNotificationPreferences::normalizeChannel((string) $channel),
             'requireInteraction' => $data['require_interaction'] ?? false,
             'actions' => $data['actions'] ?? [],
         ];
