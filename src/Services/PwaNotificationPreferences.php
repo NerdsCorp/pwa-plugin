@@ -3,6 +3,7 @@
 namespace PwaPlugin\Services;
 
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 use PwaPlugin\Models\PwaNotificationPreference;
 
 class PwaNotificationPreferences
@@ -107,7 +108,14 @@ class PwaNotificationPreferences
             return;
         }
 
-        $selectedChannels = array_fill_keys(array_values($data['channels'] ?? []), true);
+        $rawChannels = $data['channels'] ?? array_keys(self::channelDefinitions());
+        $rawChannels = is_array($rawChannels) ? $rawChannels : [$rawChannels];
+        $selectedChannels = array_fill_keys(array_values($rawChannels), true);
+
+        if (empty($selectedChannels) && !array_key_exists('channels', $data)) {
+            $selectedChannels = array_fill_keys(array_keys(self::channelDefinitions()), true);
+        }
+
         $quietHoursEnabled = (bool) ($data['quiet_hours_enabled'] ?? false);
         $quietHoursStart = (string) ($data['quiet_hours_start'] ?? '22:00');
         $quietHoursEnd = (string) ($data['quiet_hours_end'] ?? '07:00');
@@ -170,10 +178,20 @@ class PwaNotificationPreferences
         $preference = $settings[$channel] ?? self::defaultPreferences()[$channel] ?? self::defaultPreferences()['other'];
 
         if (empty($preference['enabled'])) {
+            Log::debug('PWA notification blocked because the channel is disabled.', [
+                'user' => $user?->getKey(),
+                'channel' => $channel,
+            ]);
+
             return false;
         }
 
         if (($preference['digest_mode'] ?? 'instant') === 'daily') {
+            Log::debug('PWA notification blocked because digest mode is daily.', [
+                'user' => $user?->getKey(),
+                'channel' => $channel,
+            ]);
+
             return false;
         }
 
@@ -190,6 +208,13 @@ class PwaNotificationPreferences
                 : $currentMinutes >= $startMinutes || $currentMinutes < $endMinutes;
 
             if ($channel !== 'account' && $withinQuietHours) {
+                Log::debug('PWA notification blocked by quiet hours.', [
+                    'user' => $user?->getKey(),
+                    'channel' => $channel,
+                    'start' => $preference['quiet_hours_start'] ?? '22:00',
+                    'end' => $preference['quiet_hours_end'] ?? '07:00',
+                ]);
+
                 return false;
             }
         }
@@ -198,6 +223,13 @@ class PwaNotificationPreferences
         if ($maxPerDay > 0) {
             $sentCount = (int) ($preference['sent_count_24h'] ?? 0);
             if ($sentCount >= $maxPerDay) {
+                Log::debug('PWA notification blocked by daily limit.', [
+                    'user' => $user?->getKey(),
+                    'channel' => $channel,
+                    'sent_count_24h' => $sentCount,
+                    'max_per_day' => $maxPerDay,
+                ]);
+
                 return false;
             }
         }
