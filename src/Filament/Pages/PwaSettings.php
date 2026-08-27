@@ -284,7 +284,7 @@ class PwaSettings extends Page implements HasSchemas
                         ->label(trans('pwa-plugin::pwa-plugin.tabs.actions'))
                         ->icon('heroicon-o-command-line')
                         ->schema([
-                            PwaActions::make(),
+                            PwaActions::make(false),
                             Section::make(trans('pwa-plugin::pwa-plugin.diagnostics.title'))
                                 ->schema([
                                     Placeholder::make('diag_overall_status')->label(trans('pwa-plugin::pwa-plugin.diagnostics.labels.overall_status'))->content(fn (): string => (string) ($syncDiagnostics['overall_status'] ?? trans('pwa-plugin::pwa-plugin.diagnostics.unavailable'))),

@@ -40,7 +40,7 @@ class PwaNotificationPreferences
     public static function channelOptions(): array
     {
         return collect(self::channelDefinitions())
-            ->map(fn (array $definition): string => $definition['label'])
+            ->mapWithKeys(fn (array $definition, string $channel): array => [$channel => $definition['label']])
             ->all();
     }
 
