@@ -3,7 +3,6 @@
 namespace PwaPlugin\Services;
 
 use Carbon\Carbon;
-use Illuminate\Support\Arr;
 use PwaPlugin\Models\PwaNotificationPreference;
 
 class PwaNotificationPreferences
