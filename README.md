@@ -221,6 +221,8 @@ Android does not support SVG or ICO for app icons or notification badges. Switch
 - Verify `minishlink/web-push` is installed
 - Re-subscribe the device and run a test push
 
+![Alt](https://repobeats.axiom.co/api/embed/80311c1baa59a0ba31dfa51b712ad70187a0da16.svg "Repobeats analytics image")
+
 ## License
 
 GNU General Public License v3.0
