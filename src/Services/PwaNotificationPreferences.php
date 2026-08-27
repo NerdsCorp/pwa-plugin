@@ -109,10 +109,27 @@ class PwaNotificationPreferences
         }
 
         $rawChannels = $data['channels'] ?? array_keys(self::channelDefinitions());
-        $rawChannels = is_array($rawChannels) ? $rawChannels : [$rawChannels];
-        $selectedChannels = array_fill_keys(array_values($rawChannels), true);
 
-        if (empty($selectedChannels) && !array_key_exists('channels', $data)) {
+        if (!is_array($rawChannels)) {
+            $rawChannels = preg_split('/[\s,]+/', (string) $rawChannels, -1, PREG_SPLIT_NO_EMPTY) ?: [];
+        }
+
+        $selectedChannels = [];
+        foreach ($rawChannels as $channel) {
+            if (is_array($channel)) {
+                foreach ($channel as $nestedChannel) {
+                    $normalized = self::normalizeChannel((string) $nestedChannel);
+                    $selectedChannels[$normalized] = true;
+                }
+
+                continue;
+            }
+
+            $normalized = self::normalizeChannel((string) $channel);
+            $selectedChannels[$normalized] = true;
+        }
+
+        if ($selectedChannels === [] && !array_key_exists('channels', $data)) {
             $selectedChannels = array_fill_keys(array_keys(self::channelDefinitions()), true);
         }
 
@@ -173,6 +190,10 @@ class PwaNotificationPreferences
 
     public static function shouldDeliver(mixed $user, ?string $channel = null): bool
     {
+        if (!$user || !method_exists($user, 'getMorphClass') || !method_exists($user, 'getKey')) {
+            return true;
+        }
+
         $channel = self::normalizeChannel((string) ($channel ?: 'other'));
         $settings = self::settingsForUser($user);
         $preference = $settings[$channel] ?? self::defaultPreferences()[$channel] ?? self::defaultPreferences()['other'];

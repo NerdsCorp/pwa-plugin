@@ -112,7 +112,7 @@ class PwaActions
                     CheckboxList::make('pwa_notification_preferences.channels')
                         ->label(fn (): string => trans('pwa-plugin::pwa-plugin.preferences.channels_label'))
                         ->options(PwaNotificationPreferences::channelOptions())
-                        ->default(array_values(array_keys(array_filter($preferences, fn (array $value): bool => (bool) ($value['enabled'] ?? false)))))
+                        ->default(array_keys(array_filter($preferences, fn (array $value): bool => (bool) ($value['enabled'] ?? false))))
                         ->columns(2),
 
                     Group::make()->columns(2)->schema([
