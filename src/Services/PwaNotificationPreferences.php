@@ -200,7 +200,7 @@ class PwaNotificationPreferences
 
         if (empty($preference['enabled'])) {
             Log::debug('PWA notification blocked because the channel is disabled.', [
-                'user' => $user?->getKey(),
+                'user' => $user->getKey(),
                 'channel' => $channel,
             ]);
 
@@ -209,7 +209,7 @@ class PwaNotificationPreferences
 
         if (($preference['digest_mode'] ?? 'instant') === 'daily') {
             Log::debug('PWA notification blocked because digest mode is daily.', [
-                'user' => $user?->getKey(),
+                'user' => $user->getKey(),
                 'channel' => $channel,
             ]);
 
@@ -230,7 +230,7 @@ class PwaNotificationPreferences
 
             if ($channel !== 'account' && $withinQuietHours) {
                 Log::debug('PWA notification blocked by quiet hours.', [
-                    'user' => $user?->getKey(),
+                    'user' => $user->getKey(),
                     'channel' => $channel,
                     'start' => $preference['quiet_hours_start'] ?? '22:00',
                     'end' => $preference['quiet_hours_end'] ?? '07:00',
@@ -245,7 +245,7 @@ class PwaNotificationPreferences
             $sentCount = (int) ($preference['sent_count_24h'] ?? 0);
             if ($sentCount >= $maxPerDay) {
                 Log::debug('PWA notification blocked by daily limit.', [
-                    'user' => $user?->getKey(),
+                    'user' => $user->getKey(),
                     'channel' => $channel,
                     'sent_count_24h' => $sentCount,
                     'max_per_day' => $maxPerDay,
