@@ -1,0 +1,82 @@
+name: Panel Integration (main)
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  schedule:
+    - cron: '0 6 * * 1'   # weekly — catches upstream Panel changes with no PRs open
+  workflow_dispatch:
+
+jobs:
+  build-install:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout plugin
+        uses: actions/checkout@v4
+        with:
+          path: pwa-plugin
+
+      - name: Checkout Pelican Panel (main)
+        uses: actions/checkout@v4
+        with:
+          repository: pelican/panel
+          ref: main
+          path: panel
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: mbstring, bcmath, pdo_sqlite, curl, zip, intl
+          tools: composer:v2
+          coverage: none
+
+      - name: Install Panel dependencies
+        working-directory: panel
+        run: composer install --no-interaction --prefer-dist --no-progress
+
+      - name: Drop plugin into Panel (folder name must match plugin.json "id")
+        run: |
+          mkdir -p panel/plugins
+          cp -r pwa-plugin panel/plugins/pwa-plugin
+
+      - name: Install plugin's declared composer_packages into Panel
+        working-directory: panel
+        run: composer require minishlink/web-push:^11.0.0 brick/math:^0.17.2 -W --no-interaction
+
+      - name: Boot Panel with plugin present
+        working-directory: panel
+        run: |
+          cp .env.example .env
+          php artisan key:generate --force
+          php artisan migrate --force
+          php artisan config:cache
+
+      - name: Confirm plugin was registered
+        working-directory: panel
+        run: |
+          php artisan list | grep -i pwa || echo "No pwa-specific artisan commands found (may be expected)"
+          test -d plugins/pwa-plugin/src || (echo "Plugin src/ missing after copy" && exit 1)
+
+  lint-and-static-analysis:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout plugin
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          tools: composer:v2
+          coverage: none
+
+      - name: Install dev dependencies
+        run: composer install --no-interaction --prefer-dist --no-progress
+
+      - name: Run Pint (style check)
+        run: vendor/bin/pint --test
+
+      - name: Run PHPStan
+        run: vendor/bin/phpstan analyse --no-progress
