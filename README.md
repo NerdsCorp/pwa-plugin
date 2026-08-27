@@ -11,6 +11,9 @@
 [![Repo Size](https://img.shields.io/github/repo-size/NerdsCorp/pwa-plugin?style=flat-square)](https://github.com/NerdsCorp/pwa-plugin)
 [![License](https://img.shields.io/github/license/NerdsCorp/pwa-plugin?style=flat-square)](https://github.com/NerdsCorp/pwa-plugin/blob/main/LICENSE)
 
+[![Panel Integration (main)](https://github.com/NerdsCorp/pwa-plugin/actions/workflows/panel-integration-main.yml/badge.svg)](https://github.com/NerdsCorp/pwa-plugin/actions/workflows/panel-integration-main.yml)
+[![Panel Integration (latest release)](https://github.com/NerdsCorp/pwa-plugin/actions/workflows/panel-integration-latest.yml/badge.svg)](https://github.com/NerdsCorp/pwa-plugin/actions/workflows/panel-integration-latest.yml)
+
 # PWA Plugin for Pelican Panel
 
 Transform your Pelican Panel into a full-fledged Progressive Web App. Users can install it like a native app and receive push notifications for all the important stuff.
