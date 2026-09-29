@@ -11,7 +11,6 @@ use Filament\Notifications\Notification;
 use Filament\Schemas\Components\Actions as SchemaActions;
 use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Section;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 
 class PwaActions
@@ -109,52 +108,48 @@ class PwaActions
             $schema[] = Section::make(fn (): string => trans('pwa-plugin::pwa-plugin.preferences.section_title'))
                 ->description(fn (): string => trans('pwa-plugin::pwa-plugin.preferences.section_description'))
                 ->schema([
-                    CheckboxList::make('pwa_notification_preferences.channels')
-                        ->label(fn (): string => trans('pwa-plugin::pwa-plugin.preferences.channels_label'))
-                        ->options(PwaNotificationPreferences::channelOptions())
-                        ->default(array_keys(array_filter($preferences, fn (array $value): bool => (bool) ($value['enabled'] ?? false))))
-                        ->columns(2),
-
-                    Group::make()->columns(2)->schema([
-                        Select::make('pwa_notification_preferences.digest_mode')
-                            ->label(fn (): string => trans('pwa-plugin::pwa-plugin.preferences.digest_mode_label'))
-                            ->options([
-                                'instant' => trans('pwa-plugin::pwa-plugin.preferences.digest_mode_instant'),
-                                'daily' => trans('pwa-plugin::pwa-plugin.preferences.digest_mode_daily'),
-                            ])
-                            ->default(Arr::first($preferences)['digest_mode'] ?? 'instant'),
-                        TextInput::make('pwa_notification_preferences.max_per_day')
-                            ->label(fn (): string => trans('pwa-plugin::pwa-plugin.preferences.max_per_day_label'))
-                            ->numeric()
-                            ->minValue(0)
-                            ->maxValue(100)
-                            ->default((int) (Arr::first($preferences)['max_per_day'] ?? 10)),
-                    ]),
-
-                    Toggle::make('pwa_notification_preferences.quiet_hours_enabled')
-                        ->label(fn (): string => trans('pwa-plugin::pwa-plugin.preferences.quiet_hours_label'))
-                        ->default((bool) (Arr::first($preferences)['quiet_hours_enabled'] ?? false)),
-
-                    Group::make()->columns(2)->schema([
-                        TextInput::make('pwa_notification_preferences.quiet_hours_start')
-                            ->label(fn (): string => trans('pwa-plugin::pwa-plugin.preferences.quiet_hours_start_label'))
-                            ->placeholder('22:00')
-                            ->default(Arr::first($preferences)['quiet_hours_start'] ?? '22:00'),
-                        TextInput::make('pwa_notification_preferences.quiet_hours_end')
-                            ->label(fn (): string => trans('pwa-plugin::pwa-plugin.preferences.quiet_hours_end_label'))
-                            ->placeholder('07:00')
-                            ->default(Arr::first($preferences)['quiet_hours_end'] ?? '07:00'),
-                    ]),
-
                     SchemaActions::make([
                         Action::make('save_notification_preferences')
                             ->label(fn (): string => trans('pwa-plugin::pwa-plugin.preferences.save_button'))
                             ->icon('heroicon-o-check-circle')
                             ->color('primary')
+                            ->schema([
+                                CheckboxList::make('channels')
+                                    ->label(fn (): string => trans('pwa-plugin::pwa-plugin.preferences.channels_label'))
+                                    ->options(PwaNotificationPreferences::channelOptions())
+                                    ->default(array_keys(array_filter($preferences, fn (array $value): bool => (bool) ($value['enabled'] ?? false))))
+                                    ->columns(2),
+                                Group::make()->columns(2)->schema([
+                                    Select::make('digest_mode')
+                                        ->label(fn (): string => trans('pwa-plugin::pwa-plugin.preferences.digest_mode_label'))
+                                        ->options([
+                                            'instant' => trans('pwa-plugin::pwa-plugin.preferences.digest_mode_instant'),
+                                            'daily' => trans('pwa-plugin::pwa-plugin.preferences.digest_mode_daily'),
+                                        ])
+                                        ->default(reset($preferences)['digest_mode'] ?? 'instant'),
+                                    TextInput::make('max_per_day')
+                                        ->label(fn (): string => trans('pwa-plugin::pwa-plugin.preferences.max_per_day_label'))
+                                        ->numeric()
+                                        ->minValue(0)
+                                        ->maxValue(100)
+                                        ->default((int) (reset($preferences)['max_per_day'] ?? 10)),
+                                ]),
+                                Toggle::make('quiet_hours_enabled')
+                                    ->label(fn (): string => trans('pwa-plugin::pwa-plugin.preferences.quiet_hours_label'))
+                                    ->default((bool) (reset($preferences)['quiet_hours_enabled'] ?? false)),
+                                Group::make()->columns(2)->schema([
+                                    TextInput::make('quiet_hours_start')
+                                        ->label(fn (): string => trans('pwa-plugin::pwa-plugin.preferences.quiet_hours_start_label'))
+                                        ->placeholder('22:00')
+                                        ->default(reset($preferences)['quiet_hours_start'] ?? '22:00'),
+                                    TextInput::make('quiet_hours_end')
+                                        ->label(fn (): string => trans('pwa-plugin::pwa-plugin.preferences.quiet_hours_end_label'))
+                                        ->placeholder('07:00')
+                                        ->default(reset($preferences)['quiet_hours_end'] ?? '07:00'),
+                                ]),
+                            ])
                             ->action(function (?array $data = null): void {
-                                $payload = $data ?? request()->all();
-                                $preferences = $payload['pwa_notification_preferences'] ?? $payload;
-                                PwaNotificationPreferences::saveForUser(auth()->user(), $preferences);
+                                PwaNotificationPreferences::saveForUser(auth()->user(), $data ?? []);
 
                                 Notification::make()
                                     ->title(trans('pwa-plugin::pwa-plugin.preferences.saved'))

@@ -84,6 +84,11 @@ class PwaNotificationPreferences
                 continue;
             }
 
+            $sentCount = max(0, (int) ($row->sent_count_24h ?? 0));
+            if (!$row->last_sent_at || $row->last_sent_at->lt(now()->subHours(24))) {
+                $sentCount = 0;
+            }
+
             $defaults[$channel] = array_replace($defaults[$channel], [
                 'enabled' => (bool) $row->enabled,
                 'digest_mode' => in_array((string) $row->digest_mode, ['instant', 'daily'], true)
@@ -93,7 +98,7 @@ class PwaNotificationPreferences
                 'quiet_hours_start' => (string) ($row->quiet_hours_start ?: '22:00'),
                 'quiet_hours_end' => (string) ($row->quiet_hours_end ?: '07:00'),
                 'max_per_day' => max(0, (int) ($row->max_per_day ?? 10)),
-                'sent_count_24h' => max(0, (int) ($row->sent_count_24h ?? 0)),
+                'sent_count_24h' => $sentCount,
                 'last_sent_at' => $row->last_sent_at ? $row->last_sent_at->toISOString() : null,
                 'last_digest_sent_at' => $row->last_digest_sent_at ? $row->last_digest_sent_at->toISOString() : null,
             ]);
@@ -285,6 +290,9 @@ class PwaNotificationPreferences
         }
 
         $preference->last_sent_at = now();
+        if (!$preference->last_sent_at || $preference->last_sent_at->lt(now()->subHours(24))) {
+            $preference->sent_count_24h = 0;
+        }
         $preference->sent_count_24h = (int) ($preference->sent_count_24h ?? 0) + 1;
         $preference->save();
     }

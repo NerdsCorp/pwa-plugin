@@ -121,7 +121,7 @@ class SendPwaPushOnDatabaseNotification
         if (method_exists($event->notification, 'toPwaPush')) {
             $custom = $event->notification->toPwaPush($event->notifiable);
             if (is_array($custom)) {
-                return $this->normalizePayload($custom);
+                return $this->normalizePayload($custom, $event->notifiable, $this->guessChannelFromNotification($event));
             }
         }
 
@@ -134,13 +134,13 @@ class SendPwaPushOnDatabaseNotification
         }
 
         if (!empty($data)) {
-            return $this->normalizePayload($data, $event->notifiable);
+            return $this->normalizePayload($data, $event->notifiable, $this->guessChannelFromNotification($event));
         }
 
         if ($event->channel === 'mail' && method_exists($event->notification, 'toMail')) {
             $mail = $event->notification->toMail($event->notifiable);
             if ($mail instanceof MailMessage) {
-                return $this->normalizePayload($this->payloadFromMailMessage($mail), $event->notifiable);
+                return $this->normalizePayload($this->payloadFromMailMessage($mail), $event->notifiable, $this->guessChannelFromNotification($event));
             }
         }
 
@@ -183,7 +183,7 @@ class SendPwaPushOnDatabaseNotification
         return $payload;
     }
 
-    private function normalizePayload(array $data, mixed $notifiable = null): array
+    private function normalizePayload(array $data, mixed $notifiable = null, string $fallbackChannel = 'other'): array
     {
         $defaultTitle = config('app.name', 'Pelican');
         $defaultBody = trans('pwa-plugin::pwa-plugin.messages.new_notification');
@@ -191,7 +191,7 @@ class SendPwaPushOnDatabaseNotification
         $title = $data['title'] ?? $data['subject'] ?? $defaultTitle;
         $body = $data['body'] ?? $data['message'] ?? $defaultBody;
         $url = $data['url'] ?? $data['action_url'] ?? url('/');
-        $channel = $data['channel'] ?? $data['category'] ?? 'other';
+        $channel = $data['channel'] ?? $data['category'] ?? $fallbackChannel;
 
         $icon = $this->assetOrUrl($this->settings->get('default_notification_icon', config('pwa-plugin.default_notification_icon', '/pelican.svg')));
         $badge = $this->assetOrUrl($this->settings->get('default_notification_badge', config('pwa-plugin.default_notification_badge', '/pelican.svg')));
