@@ -88,6 +88,8 @@ cd /var/www/pelican
 composer require minishlink/web-push:^11.0.0 -W
 ```
 
+Push subscription endpoints are restricted to the standard Google, Mozilla, Apple, and Microsoft push services. To allow another trusted push service, set `PWA_PLUGIN_PUSH_ENDPOINT_HOSTS` to a comma-separated list of endpoint hostnames.
+
 ## Admin Pages
 
 ### Admin → PWA

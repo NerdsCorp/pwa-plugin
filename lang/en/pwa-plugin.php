@@ -140,6 +140,7 @@ return [
     ],
     'errors' => [
         'table_missing' => 'Push subscriptions table is missing.',
+        'invalid_push_endpoint' => 'This browser push service endpoint is not supported.',
         'unauthorized' => 'Unauthorized access.',
         'library_missing' => 'Web Push library not found.',
         'vapid_missing' => 'VAPID keys or subject are missing.',

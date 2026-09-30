@@ -81,6 +81,7 @@ class PwaController extends Controller
         $serviceWorker = <<<'JS'
 const CACHE_NAME = '__CACHE_NAME__';
 const CACHE_VERSION = __CACHE_VERSION__;
+const CACHE_SCHEMA_VERSION = 2;
 const CACHE_ENABLED = __CACHE_ENABLED__;
 const PRECACHE_URLS = __PRECACHE_URLS__;
 const DEFAULT_TITLE = '__DEFAULT_TITLE__';
@@ -89,14 +90,30 @@ const DEFAULT_ICON = '__DEFAULT_ICON__';
 const SYNC_ROUTE = '__SYNC_ROUTE__';
 const SYNC_STATE_CACHE = `${CACHE_NAME}:sync-state`;
 const SYNC_STATE_KEY = '/__pwa_sync_state__';
+const PAGE_CACHE = `${CACHE_NAME}:${CACHE_VERSION}:${CACHE_SCHEMA_VERSION}`;
 
 // Install event - minimal setup
 self.addEventListener('install', (event) => {
     console.log('PWA: Service Worker installing');
     event.waitUntil((async () => {
         if (CACHE_ENABLED && Array.isArray(PRECACHE_URLS) && PRECACHE_URLS.length > 0) {
-            const cache = await caches.open(`${CACHE_NAME}:${CACHE_VERSION}`);
-            await cache.addAll(PRECACHE_URLS);
+            const cache = await caches.open(PAGE_CACHE);
+            for (const resourceUrl of PRECACHE_URLS) {
+                try {
+                    const request = new Request(resourceUrl, { credentials: 'omit' });
+                    const response = await fetch(request);
+                    const contentType = response.headers.get('Content-Type') || '';
+                    const cacheControl = response.headers.get('Cache-Control') || '';
+                    if (response.ok
+                        && /^(text\/css|application\/javascript|text\/javascript|image\/)/i.test(contentType)
+                        && !/private|no-store/i.test(cacheControl)
+                        && !response.headers.has('Set-Cookie')) {
+                        await cache.put(request, response);
+                    }
+                } catch (_e) {
+                    // Skip resources that cannot be safely cached.
+                }
+            }
         }
         self.skipWaiting();
     })());
@@ -106,12 +123,12 @@ self.addEventListener('install', (event) => {
 self.addEventListener('activate', (event) => {
     console.log('PWA: Service Worker activating');
     event.waitUntil((async () => {
-        if (CACHE_ENABLED) {
-            const keys = await caches.keys();
-            await Promise.all(keys
-                .filter(key => key.startsWith(CACHE_NAME) && key !== `${CACHE_NAME}:${CACHE_VERSION}`)
-                .map(key => caches.delete(key)));
-        }
+        const keys = await caches.keys();
+        await Promise.all(keys
+            .filter(key => key.startsWith(CACHE_NAME)
+                && key !== SYNC_STATE_CACHE
+                && (!CACHE_ENABLED || key !== PAGE_CACHE))
+            .map(key => caches.delete(key)));
         await self.clients.claim();
     })());
 });
@@ -180,20 +197,26 @@ self.addEventListener('fetch', (event) => {
     if (url.pathname.startsWith('/api/')) return;
 
     const accept = event.request.headers.get('accept') || '';
-    if (!accept.includes('text/html')
-        && !accept.includes('text/css')
+    if (accept.includes('text/html')) return;
+    if (!accept.includes('text/css')
         && !accept.includes('application/javascript')
         && !accept.includes('image/')) {
         return;
     }
 
     event.respondWith((async () => {
-        const cache = await caches.open(`${CACHE_NAME}:${CACHE_VERSION}`);
+        const cache = await caches.open(PAGE_CACHE);
         const cached = await cache.match(event.request);
         if (cached) return cached;
 
         const response = await fetch(event.request);
-        if (response && response.status === 200) {
+        const cacheControl = response?.headers.get('Cache-Control') || '';
+        const contentType = response?.headers.get('Content-Type') || '';
+        if (response
+            && response.status === 200
+            && /^(text\/css|application\/javascript|text\/javascript|image\/)/i.test(contentType)
+            && !/private|no-store/i.test(cacheControl)
+            && !response.headers.has('Set-Cookie')) {
             cache.put(event.request, response.clone());
         }
         return response;

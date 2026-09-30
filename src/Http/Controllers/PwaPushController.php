@@ -24,10 +24,17 @@ class PwaPushController extends Controller
         }
 
         $request->validate([
-            'endpoint' => ['required', 'string', 'url', 'max:2048'],
+            'endpoint' => [
+                'required',
+                'string',
+                'url',
+                'max:2048',
+                fn (string $attribute, mixed $value, \Closure $fail) => PwaPushService::isAllowedEndpoint((string) $value)
+                    ?: $fail(trans('pwa-plugin::pwa-plugin.errors.invalid_push_endpoint')),
+            ],
             'keys.p256dh' => ['required', 'string', 'max:255'],
             'keys.auth' => ['required', 'string', 'max:255'],
-            'contentEncoding' => ['nullable', 'string', 'max:50'],
+            'contentEncoding' => ['nullable', 'string', 'in:aesgcm,aes128gcm'],
         ]);
 
         $user = $this->resolveUser($request);
