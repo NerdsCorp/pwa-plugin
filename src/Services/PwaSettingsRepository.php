@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace PwaPlugin\Services;
 
 use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
 use Minishlink\WebPush\VAPID;
 use PwaPlugin\Models\PwaSetting;
@@ -74,7 +75,12 @@ class PwaSettingsRepository
             if (in_array($key, ['vapid_private_key'], true) && is_string($value) && $value !== '') {
                 try {
                     return Crypt::decryptString($value);
-                } catch (\Throwable) {
+                } catch (\Throwable $exception) {
+                    Log::warning('PWA setting could not be decrypted; the stored value will be used as-is.', [
+                        'setting' => $key,
+                        'exception' => $exception::class,
+                    ]);
+
                     return $value;
                 }
             }

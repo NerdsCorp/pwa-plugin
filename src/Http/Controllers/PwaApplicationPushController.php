@@ -7,6 +7,7 @@ namespace PwaPlugin\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
 use PwaPlugin\Http\Requests\SendPwaNotificationRequest;
 use PwaPlugin\Models\PwaPushSubscription;
@@ -33,6 +34,10 @@ class PwaApplicationPushController extends Controller
             ->get();
 
         if ($subscriptions->isEmpty()) {
+            Log::notice('PWA push was requested for a user with no registered subscriptions.', [
+                'user_id' => $user->getKey(),
+            ]);
+
             return response()->json([
                 'message' => 'The user has no push subscriptions.',
                 'sent' => 0,
@@ -54,7 +59,11 @@ class PwaApplicationPushController extends Controller
                     $failed++;
                 }
             } catch (\Throwable $exception) {
-                report($exception);
+                Log::error('PWA Application API could not deliver a notification to a subscription.', [
+                    'subscription_id' => $subscription->getKey(),
+                    'user_id' => $user->getKey(),
+                    'exception' => $exception,
+                ]);
                 $failed++;
             }
         }
@@ -91,7 +100,10 @@ class PwaApplicationPushController extends Controller
                             $failed++;
                         }
                     } catch (\Throwable $exception) {
-                        report($exception);
+                        Log::error('PWA Application API could not deliver a broadcast notification to a subscription.', [
+                            'subscription_id' => $subscription->getKey(),
+                            'exception' => $exception,
+                        ]);
                         $failed++;
                     }
                 }
@@ -103,19 +115,27 @@ class PwaApplicationPushController extends Controller
     private function unavailableResponse(PwaSettingsRepository $settings, PwaPushService $push): ?JsonResponse
     {
         if (!Schema::hasTable('pwa_push_subscriptions')) {
+            Log::error('PWA Application API request could not send a push because the subscriptions table is missing.');
+
             return response()->json(['message' => 'Push subscriptions are unavailable until the plugin migrations have run.'], 503);
         }
 
         if (!(bool) $settings->get('push_enabled', config('pwa-plugin.push_enabled', false))) {
+            Log::warning('PWA Application API request could not send a push because push notifications are disabled in plugin settings.');
+
             return response()->json(['message' => 'PWA push notifications are disabled.'], 409);
         }
 
         if (!$push->canSend()) {
+            Log::error('PWA Application API request could not send a push because the Web Push library is unavailable.');
+
             return response()->json(['message' => 'The Web Push library is unavailable.'], 503);
         }
 
         $vapid = $this->vapid($settings);
         if (!$vapid['publicKey'] || !$vapid['privateKey'] || !$vapid['subject']) {
+            Log::error('PWA Application API request could not send a push because VAPID settings are incomplete.');
+
             return response()->json(['message' => 'VAPID keys are not configured.'], 503);
         }
 
@@ -151,12 +171,22 @@ class PwaApplicationPushController extends Controller
         $total ??= $sent + $failed;
 
         if ($total === 0) {
+            Log::notice('PWA Application API broadcast found no registered push subscriptions.');
+
             return response()->json([
                 'message' => 'No push subscriptions were found.',
                 'sent' => 0,
                 'failed' => 0,
                 'total' => 0,
             ], 404);
+        }
+
+        if ($failed > 0) {
+            Log::warning('PWA Application API push request completed with failed deliveries.', [
+                'sent' => $sent,
+                'failed' => $failed,
+                'total' => $total,
+            ]);
         }
 
         return response()->json([

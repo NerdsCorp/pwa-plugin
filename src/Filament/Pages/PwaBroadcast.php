@@ -13,6 +13,7 @@ use Filament\Schemas\Components\Actions as SchemaActions;
 use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Contracts\HasSchemas;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
 use PwaPlugin\Models\PwaPushSubscription;
 use PwaPlugin\Services\PwaPushService;
@@ -114,18 +115,21 @@ class PwaBroadcast extends Page implements HasSchemas
     public function sendBroadcast(PwaSettingsRepository $settings, PwaPushService $push): void
     {
         if (!Schema::hasTable('pwa_push_subscriptions')) {
+            Log::error('PWA broadcast could not run because the subscriptions table is missing.');
             Notification::make()->title(trans('pwa-plugin::pwa-plugin.errors.table_missing'))->danger()->send();
 
             return;
         }
 
         if (!$push->canSend()) {
+            Log::error('PWA broadcast could not run because the Web Push library is unavailable.');
             Notification::make()->title(trans('pwa-plugin::pwa-plugin.errors.library_missing'))->danger()->send();
 
             return;
         }
 
         if (!(bool) $settings->get('push_enabled', config('pwa-plugin.push_enabled', false))) {
+            Log::warning('PWA broadcast was requested while push notifications are disabled in plugin settings.');
             Notification::make()->title(trans('pwa-plugin::pwa-plugin.errors.push_disabled'))->warning()->send();
 
             return;
@@ -135,6 +139,7 @@ class PwaBroadcast extends Page implements HasSchemas
         $vapidPublic = (string) $settings->get('vapid_public_key', config('pwa-plugin.vapid_public_key', ''));
         $vapidPrivate = (string) $settings->get('vapid_private_key', config('pwa-plugin.vapid_private_key', ''));
         if ($vapidSubject === '' || $vapidPublic === '' || $vapidPrivate === '') {
+            Log::error('PWA broadcast could not run because VAPID settings are incomplete.');
             Notification::make()->title(trans('pwa-plugin::pwa-plugin.errors.vapid_missing'))->danger()->send();
 
             return;
@@ -182,12 +187,21 @@ class PwaBroadcast extends Page implements HasSchemas
             });
 
         if ($total === 0) {
+            Log::notice('PWA broadcast was requested, but no push subscriptions are registered.');
             Notification::make()
                 ->title(trans('pwa-plugin::pwa-plugin.errors.no_subscription'))
                 ->warning()
                 ->send();
 
             return;
+        }
+
+        if ($sent < $total) {
+            Log::warning('PWA broadcast completed with failed deliveries.', [
+                'sent' => $sent,
+                'failed' => $total - $sent,
+                'total' => $total,
+            ]);
         }
 
         Notification::make()

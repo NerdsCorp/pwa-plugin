@@ -19,6 +19,7 @@ use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Schemas\Contracts\HasSchemas;
 use Filament\Support\Enums\IconSize;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
 use PwaPlugin\Models\PwaPushSubscription;
 use PwaPlugin\Services\PwaActions;
@@ -506,7 +507,11 @@ class PwaSettings extends Page implements HasSchemas
                     $vapidConfigured ? trans('pwa-plugin::pwa-plugin.diagnostics.status.yes') : trans('pwa-plugin::pwa-plugin.diagnostics.status.no'),
                 ),
             ];
-        } catch (\Throwable) {
+        } catch (\Throwable $exception) {
+            Log::error('PWA settings diagnostics could not be generated.', [
+                'exception' => $exception,
+            ]);
+
             return [
                 'overall_status' => $unavailable,
                 'pwa_users' => $unavailable,
@@ -529,7 +534,11 @@ class PwaSettings extends Page implements HasSchemas
 
         try {
             return Carbon::parse((string) $value)->toDateTimeString();
-        } catch (\Throwable) {
+        } catch (\Throwable $exception) {
+            Log::warning('PWA diagnostics could not parse a stored timestamp.', [
+                'exception' => $exception::class,
+            ]);
+
             return null;
         }
     }

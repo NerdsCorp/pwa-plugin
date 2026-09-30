@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PwaPlugin\Services;
 
+use Illuminate\Support\Facades\Log;
 use Minishlink\WebPush\Subscription;
 use Minishlink\WebPush\WebPush;
 use PwaPlugin\Models\PwaPushSubscription;
@@ -68,33 +69,64 @@ class PwaPushService
 
     public function sendToSubscription(PwaPushSubscription $subscription, array $payload, array $vapid): bool
     {
-        if (!$this->canSend() || !self::isAllowedEndpoint((string) $subscription->endpoint)) {
+        if (!$this->canSend()) {
+            Log::error('PWA push could not be sent because the Web Push library is unavailable.', $this->subscriptionContext($subscription));
+
             return false;
         }
 
-        $webPush = new WebPush([
-            'VAPID' => $vapid,
-        ]);
+        if (!self::isAllowedEndpoint((string) $subscription->endpoint)) {
+            Log::warning('PWA push was skipped because the subscription endpoint is not an allowed public HTTPS address.', $this->subscriptionContext($subscription));
 
-        $webPush->queueNotification(
-            Subscription::create([
-                'endpoint' => $subscription->endpoint,
-                'keys' => [
-                    'p256dh' => $subscription->public_key,
-                    'auth' => $subscription->auth_token,
-                ],
-            ]),
-            json_encode($payload, JSON_UNESCAPED_SLASHES),
-        );
+            return false;
+        }
 
-        foreach ($webPush->flush() as $report) {
-            if (!$report->isSuccess()) {
-                if ($report->isSubscriptionExpired()) {
-                    $subscription->delete();
+        try {
+            $webPush = new WebPush([
+                'VAPID' => $vapid,
+            ]);
+
+            $webPush->queueNotification(
+                Subscription::create([
+                    'endpoint' => $subscription->endpoint,
+                    'keys' => [
+                        'p256dh' => $subscription->public_key,
+                        'auth' => $subscription->auth_token,
+                    ],
+                ]),
+                json_encode($payload, JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR),
+            );
+
+            foreach ($webPush->flush() as $report) {
+                if (!$report->isSuccess()) {
+                    $expired = $report->isSubscriptionExpired();
+                    if ($expired) {
+                        $subscription->delete();
+                    }
+
+                    $response = $report->getResponse();
+                    Log::warning('PWA push service rejected a notification.', array_merge(
+                        $this->subscriptionContext($subscription),
+                        [
+                            'http_status' => $response?->getStatusCode(),
+                            'reason' => $this->safeLogMessage($report->getReason()),
+                            'subscription_expired' => $expired,
+                        ],
+                    ));
+
+                    return false;
                 }
-
-                return false;
             }
+        } catch (\Throwable $exception) {
+            Log::error('PWA push delivery failed before the push service accepted the notification.', array_merge(
+                $this->subscriptionContext($subscription),
+                [
+                    'exception' => $exception::class,
+                    'error' => $this->safeLogMessage($exception->getMessage()),
+                ],
+            ));
+
+            return false;
         }
 
         $subscription->forceFill([
@@ -102,5 +134,21 @@ class PwaPushService
         ])->saveQuietly();
 
         return true;
+    }
+
+    private function subscriptionContext(PwaPushSubscription $subscription): array
+    {
+        return [
+            'subscription_id' => $subscription->getKey(),
+            'user_id' => $subscription->notifiable_id,
+        ];
+    }
+
+    private function safeLogMessage(string $message): string
+    {
+        $message = preg_replace('~https?://[^\s"<>]+~i', '[redacted URL]', $message) ?? 'Unspecified push error.';
+        $message = preg_replace('/[\r\n\t]+/', ' ', $message) ?? 'Unspecified push error.';
+
+        return substr($message, 0, 300);
     }
 }

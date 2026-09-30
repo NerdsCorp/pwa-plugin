@@ -290,6 +290,12 @@ The app will launch in full-screen mode like a native app.
 
 ## Troubleshooting
 
+### Plugin Logs
+
+PWA server-side errors are written through Laravel's standard logger, so they go to the same log destination configured for Pelican. Search the panel log for messages beginning with `PWA` to find failed push deliveries, missing push configuration, subscription problems, or settings diagnostics errors. Push delivery entries include the subscription and user IDs, provider status, and a short sanitized reason; they do not include the push endpoint or notification contents.
+
+Browser and service-worker errors happen on the user's device and are not sent to the panel log. Check that browser's developer console for client-side issues.
+
 ### PWA Won't Install
 
 - Confirm HTTPS is enabled

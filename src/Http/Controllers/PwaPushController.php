@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
 use PwaPlugin\Models\PwaPushSubscription;
@@ -18,6 +19,8 @@ class PwaPushController extends Controller
     public function subscribe(Request $request): JsonResponse
     {
         if (!Schema::hasTable('pwa_push_subscriptions')) {
+            Log::error('PWA subscription could not be stored because the subscriptions table is missing.');
+
             return response()->json([
                 'message' => trans('pwa-plugin::pwa-plugin.errors.table_missing'),
             ], 500);
@@ -72,6 +75,8 @@ class PwaPushController extends Controller
     public function unsubscribe(Request $request): JsonResponse
     {
         if (!Schema::hasTable('pwa_push_subscriptions')) {
+            Log::error('PWA subscription could not be removed because the subscriptions table is missing.');
+
             return response()->json([
                 'message' => trans('pwa-plugin::pwa-plugin.errors.table_missing'),
             ], 500);
@@ -106,6 +111,8 @@ class PwaPushController extends Controller
     public function test(Request $request, PwaSettingsRepository $settings, PwaPushService $push): JsonResponse
     {
         if (!Schema::hasTable('pwa_push_subscriptions')) {
+            Log::error('PWA test push could not run because the subscriptions table is missing.');
+
             return response()->json([
                 'message' => trans('pwa-plugin::pwa-plugin.errors.table_missing'),
             ], 500);
@@ -125,12 +132,20 @@ class PwaPushController extends Controller
         ];
 
         if (!$push->canSend()) {
+            Log::error('PWA test push could not run because the Web Push library is unavailable.', [
+                'user_id' => $user->getKey(),
+            ]);
+
             return response()->json([
                 'message' => trans('pwa-plugin::pwa-plugin.errors.library_missing'),
             ], 400);
         }
 
         if (!$vapid['publicKey'] || !$vapid['privateKey'] || !$vapid['subject']) {
+            Log::error('PWA test push could not run because VAPID settings are incomplete.', [
+                'user_id' => $user->getKey(),
+            ]);
+
             return response()->json([
                 'message' => trans('pwa-plugin::pwa-plugin.errors.vapid_missing'),
             ], 400);
@@ -142,6 +157,10 @@ class PwaPushController extends Controller
             ->get();
 
         if ($subscriptions->isEmpty()) {
+            Log::notice('PWA test push was requested, but the user has no registered subscriptions.', [
+                'user_id' => $user->getKey(),
+            ]);
+
             return response()->json([
                 'message' => trans('pwa-plugin::pwa-plugin.errors.no_subscription'),
             ], 404);
@@ -165,6 +184,10 @@ class PwaPushController extends Controller
         foreach ($subscriptions as $subscription) {
             if (!PwaPushService::isAllowedEndpoint((string) $subscription->endpoint)) {
                 $unsupported++;
+                Log::warning('PWA test push skipped a subscription with an unsupported endpoint.', [
+                    'subscription_id' => $subscription->getKey(),
+                    'user_id' => $user->getKey(),
+                ]);
 
                 continue;
             }
@@ -172,6 +195,14 @@ class PwaPushController extends Controller
             if ($push->sendToSubscription($subscription, $payload, $vapid)) {
                 $sent++;
             }
+        }
+
+        if ($sent === 0) {
+            Log::warning('PWA test push did not reach any push service.', [
+                'user_id' => $user->getKey(),
+                'subscriptions' => $subscriptions->count(),
+                'unsupported' => $unsupported,
+            ]);
         }
 
         return response()->json([

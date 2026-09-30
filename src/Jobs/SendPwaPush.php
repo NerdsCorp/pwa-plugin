@@ -7,6 +7,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
 use PwaPlugin\Models\PwaPushSubscription;
 use PwaPlugin\Services\PwaPushService;
@@ -28,15 +29,27 @@ class SendPwaPush implements ShouldQueue
     public function handle(PwaPushService $push, PwaSettingsRepository $settings): void
     {
         if (!$push->canSend()) {
+            Log::error('Queued PWA push could not run because the Web Push library is unavailable.', [
+                'subscription_id' => $this->subscriptionId,
+            ]);
+
             return;
         }
 
         if (!Schema::hasTable('pwa_push_subscriptions')) {
+            Log::error('Queued PWA push could not run because the subscriptions table is missing.', [
+                'subscription_id' => $this->subscriptionId,
+            ]);
+
             return;
         }
 
         $subscription = PwaPushSubscription::query()->find($this->subscriptionId);
         if (!$subscription) {
+            Log::notice('Queued PWA push was skipped because its subscription no longer exists.', [
+                'subscription_id' => $this->subscriptionId,
+            ]);
+
             return;
         }
 
@@ -47,6 +60,10 @@ class SendPwaPush implements ShouldQueue
         ];
 
         if (!$vapid['publicKey'] || !$vapid['privateKey'] || !$vapid['subject']) {
+            Log::error('Queued PWA push could not run because VAPID settings are incomplete.', [
+                'subscription_id' => $this->subscriptionId,
+            ]);
+
             return;
         }
 

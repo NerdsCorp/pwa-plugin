@@ -4,8 +4,8 @@ namespace PwaPlugin\Providers;
 
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Route;
-use PwaPlugin\Http\Controllers\PwaController;
 use PwaPlugin\Http\Controllers\PwaApplicationPushController;
+use PwaPlugin\Http\Controllers\PwaController;
 use PwaPlugin\Http\Controllers\PwaPushController;
 
 class PwaPluginRouteServiceProvider extends ServiceProvider
