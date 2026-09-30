@@ -70,8 +70,6 @@ class PwaPlugin implements HasPluginSettings, PluginContract
                 ->body(implode(', ', $invalidPngFields))
                 ->warning()
                 ->send();
-
-            return;
         }
 
         $this->writeToEnvironment(PwaSettings::toEnvironmentVariables($data));

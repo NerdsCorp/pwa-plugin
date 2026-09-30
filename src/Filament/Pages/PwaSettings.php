@@ -102,8 +102,6 @@ class PwaSettings extends Page implements HasSchemas
                 ->body(implode(', ', $invalidPngFields))
                 ->warning()
                 ->send();
-
-            return;
         }
 
         $settings->setMany($state);
