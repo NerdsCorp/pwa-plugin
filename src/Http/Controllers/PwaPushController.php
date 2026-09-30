@@ -165,6 +165,7 @@ class PwaPushController extends Controller
         foreach ($subscriptions as $subscription) {
             if (!PwaPushService::isAllowedEndpoint((string) $subscription->endpoint)) {
                 $unsupported++;
+
                 continue;
             }
 
