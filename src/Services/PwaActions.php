@@ -110,9 +110,11 @@ class PwaActions
                 ->schema([
                     SchemaActions::make([
                         Action::make('save_notification_preferences')
-                            ->label(fn (): string => trans('pwa-plugin::pwa-plugin.preferences.save_button'))
+                            ->label(fn (): string => trans('pwa-plugin::pwa-plugin.preferences.modify_button'))
                             ->icon('heroicon-o-check-circle')
                             ->color('primary')
+                            ->modalHeading(fn (): string => trans('pwa-plugin::pwa-plugin.preferences.section_title'))
+                            ->modalSubmitActionLabel(fn (): string => trans('pwa-plugin::pwa-plugin.preferences.save_button'))
                             ->schema([
                                 CheckboxList::make('channels')
                                     ->label(fn (): string => trans('pwa-plugin::pwa-plugin.preferences.channels_label'))

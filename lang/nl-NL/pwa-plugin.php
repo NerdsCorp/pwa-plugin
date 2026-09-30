@@ -179,6 +179,7 @@ return [
         'quiet_hours_start_label' => 'Start rusturen',
         'quiet_hours_end_label' => 'Einde rusturen',
         'max_per_day_label' => 'Max. meldingen per dag',
+        'modify_button' => 'Voorkeuren wijzigen',
         'save_button' => 'Voorkeuren opslaan',
         'saved' => 'Meldingsvoorkeuren opgeslagen.',
     ],

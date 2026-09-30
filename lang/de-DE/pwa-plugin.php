@@ -179,6 +179,7 @@ return [
         'quiet_hours_start_label' => 'Beginn der Ruhezeiten',
         'quiet_hours_end_label' => 'Ende der Ruhezeiten',
         'max_per_day_label' => 'Max. Benachrichtigungen pro Tag',
+        'modify_button' => 'Einstellungen ändern',
         'save_button' => 'Einstellungen speichern',
         'saved' => 'Benachrichtigungseinstellungen gespeichert.',
     ],

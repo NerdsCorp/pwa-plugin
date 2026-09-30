@@ -171,6 +171,7 @@ return [
         'quiet_hours_start_label' => 'Quiet hours start',
         'quiet_hours_end_label' => 'Quiet hours end',
         'max_per_day_label' => 'Max notifications per day',
+        'modify_button' => 'Modify preferences',
         'save_button' => 'Save preferences',
         'saved' => 'Notification preferences saved.',
     ],

@@ -179,6 +179,7 @@ return [
         'quiet_hours_start_label' => 'Początek godzin ciszy',
         'quiet_hours_end_label' => 'Koniec godzin ciszy',
         'max_per_day_label' => 'Maks. powiadomień dziennie',
+        'modify_button' => 'Zmień preferencje',
         'save_button' => 'Zapisz preferencje',
         'saved' => 'Preferencje powiadomień zapisane.',
     ],
