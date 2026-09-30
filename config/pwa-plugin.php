@@ -17,13 +17,6 @@ return [
     'push_enabled' => env('PWA_PLUGIN_PUSH_ENABLED', false),
     'push_send_on_database_notifications' => env('PWA_PLUGIN_PUSH_SEND_ON_DATABASE_NOTIFICATIONS', true),
     'push_send_on_mail_notifications' => env('PWA_PLUGIN_PUSH_SEND_ON_MAIL_NOTIFICATIONS', false),
-    'push_endpoint_hosts' => array_filter(array_map(
-        'trim',
-        explode(',', env(
-            'PWA_PLUGIN_PUSH_ENDPOINT_HOSTS',
-            'fcm.googleapis.com,android.googleapis.com,push.services.mozilla.com,web.push.apple.com,notify.windows.com'
-        ))
-    )),
     'vapid_public_key' => env('PWA_PLUGIN_VAPID_PUBLIC_KEY', ''),
     'vapid_private_key' => env('PWA_PLUGIN_VAPID_PRIVATE_KEY', ''),
     'vapid_subject' => env('PWA_PLUGIN_VAPID_SUBJECT', ''),

@@ -161,7 +161,13 @@ class PwaPushController extends Controller
         ];
 
         $sent = 0;
+        $unsupported = 0;
         foreach ($subscriptions as $subscription) {
+            if (!PwaPushService::isAllowedEndpoint((string) $subscription->endpoint)) {
+                $unsupported++;
+                continue;
+            }
+
             if ($push->sendToSubscription($subscription, $payload, $vapid)) {
                 $sent++;
             }
@@ -170,9 +176,12 @@ class PwaPushController extends Controller
         return response()->json([
             'message' => $sent > 0
                 ? trans('pwa-plugin::pwa-plugin.notifications.test_sent')
-                : trans('pwa-plugin::pwa-plugin.errors.send_failed'),
+                : ($unsupported === $subscriptions->count()
+                    ? trans('pwa-plugin::pwa-plugin.errors.invalid_push_endpoint')
+                    : trans('pwa-plugin::pwa-plugin.errors.send_failed')),
             'sent' => $sent,
             'total' => $subscriptions->count(),
+            'unsupported' => $unsupported,
         ], $sent > 0 ? 200 : 500);
     }
 

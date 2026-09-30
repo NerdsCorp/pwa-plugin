@@ -87,13 +87,18 @@ class PwaActions
                                         'X-CSRF-TOKEN': pwaCsrfToken(),
                                         'Accept': 'application/json'
                                     }
-                                }).then(res => {
+                                }).then(async res => {
                                     btn.disabled = false;
-                                    if (res.ok) {
-                                        $wire.call('mountAction', 'test');
+                                    const result = await res.json().catch(() => ({}));
+                                    if (!res.ok || Number(result.sent || 0) < 1) {
+                                        window.alert(result.message || 'Failed to send notification.');
+                                        return;
                                     }
+
+                                    $wire.call('mountAction', 'exclude_test');
                                 }).catch(() => {
                                     btn.disabled = false;
+                                    window.alert('Failed to send notification.');
                                 });
                                 return false;
                             JS]),

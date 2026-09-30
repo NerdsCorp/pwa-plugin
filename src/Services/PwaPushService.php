@@ -24,16 +24,40 @@ class PwaPushService
         }
 
         $host = strtolower(rtrim((string) $parts['host'], '.'));
-        foreach ((array) config('pwa-plugin.push_endpoint_hosts', []) as $allowedHost) {
-            $allowedHost = strtolower(trim((string) $allowedHost));
-            $allowedHost = ltrim($allowedHost, '*.');
-            $allowedHost = rtrim($allowedHost, '.');
-            if ($host === $allowedHost || str_ends_with($host, '.' . $allowedHost)) {
-                return true;
+        if (filter_var($host, FILTER_VALIDATE_IP) !== false) {
+            return false;
+        }
+
+        $records = @dns_get_record($host, DNS_A | DNS_AAAA);
+        if (!is_array($records) || $records === []) {
+            return false;
+        }
+
+        $addresses = [];
+        foreach ($records as $record) {
+            if (!empty($record['ip'])) {
+                $addresses[] = $record['ip'];
+            }
+            if (!empty($record['ipv6'])) {
+                $addresses[] = $record['ipv6'];
             }
         }
 
-        return false;
+        if ($addresses === []) {
+            return false;
+        }
+
+        foreach ($addresses as $address) {
+            if (filter_var(
+                $address,
+                FILTER_VALIDATE_IP,
+                FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE
+            ) === false) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     public function canSend(): bool
