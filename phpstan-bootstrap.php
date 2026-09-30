@@ -2,11 +2,18 @@
 
 declare(strict_types=1);
 
-// PHPStan bootstrap file - provides stubs for Laravel/Filament classes
+// PHPStan bootstrap file - provides stubs for Laravel, Filament, and Pelican classes
 // These classes will be available at runtime when the plugin is loaded
 
 namespace Illuminate\Routing {
     class Controller {}
+}
+
+namespace Illuminate\Foundation\Http {
+    class FormRequest
+    {
+        public function validated(): array {}
+    }
 }
 
 namespace Illuminate\Database\Eloquent {
@@ -92,5 +99,33 @@ namespace App\Traits {
     trait EnvironmentWriterTrait
     {
         public function writeToEnvironment(array $values = []): void {}
+    }
+}
+
+namespace App\Models {
+    use Illuminate\Database\Eloquent\Model;
+
+    class User extends Model
+    {
+        public const RESOURCE_NAME = 'users';
+    }
+}
+
+namespace App\Services\Acl\Api {
+    class AdminAcl
+    {
+        public const WRITE = 2;
+    }
+}
+
+namespace App\Http\Requests\Api\Application {
+    use Illuminate\Foundation\Http\FormRequest;
+
+    abstract class ApplicationApiRequest extends FormRequest
+    {
+        protected ?string $resource;
+        protected int $permission = 0;
+
+        public function rules(): array {}
     }
 }
