@@ -289,11 +289,12 @@ class PwaNotificationPreferences
             $preference->max_per_day = 10;
         }
 
-        $preference->last_sent_at = now();
-        if (!$preference->last_sent_at || $preference->last_sent_at->lt(now()->subHours(24))) {
+        $lastSentAt = $preference->last_sent_at;
+        if (!$lastSentAt || $lastSentAt->lt(now()->subHours(24))) {
             $preference->sent_count_24h = 0;
         }
         $preference->sent_count_24h = (int) ($preference->sent_count_24h ?? 0) + 1;
+        $preference->last_sent_at = now();
         $preference->save();
     }
 }
