@@ -24,13 +24,15 @@ Transform your Pelican Panel into a full-fledged Progressive Web App. Users can 
 <img width="300" alt="image" src="https://github.com/user-attachments/assets/7f39e570-365f-4934-aff3-4a9ecb016a8f" />
 
 ### Sync Diagnostics
-<img width="300" alt="image" src="https://github.com/user-attachments/assets/2c2c09ec-08f4-495b-9fbd-c174ac0be3b5" />
+<img width="300" alt="image" src="https://github.com/user-attachments/assets/23d100f6-66b1-4668-a7a5-4e5d2bac7f91" />
 
 ### Broadcast Page
 <img width="300" alt="image" src="https://github.com/user-attachments/assets/1f95993a-e635-444d-9de6-d74b899d56d9" />
 
 ### User Profile Settings
-<img width="300" alt="image" src="https://github.com/user-attachments/assets/dce9a77a-d496-46df-b47a-f4f01acef09e" />
+<img width="300" alt="image" src="https://github.com/user-attachments/assets/29705ac7-cd45-42d4-a6d6-6f1f5905826a" />
+<img width="300" alt="image" src="https://github.com/user-attachments/assets/dff04e35-decb-4029-8086-51e4f6ad2c3f" />
+
 
 ### Android Notification
 <img width="300" alt="image" src="https://github.com/user-attachments/assets/76e9430c-82f8-4592-afae-a1e2f0f3426f" />
