@@ -13,9 +13,7 @@ use Filament\Notifications\Notification;
 use Filament\Panel;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Tabs\Tab;
-use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\View;
 use Illuminate\Support\HtmlString;
 use PwaPlugin\Filament\Pages\PwaBroadcast;
 use PwaPlugin\Filament\Pages\PwaSettings;
@@ -33,9 +31,6 @@ class PwaPlugin implements HasPluginSettings, PluginContract
 
     public function register(Panel $panel): void
     {
-        View::addNamespace('pwa-plugin', __DIR__ . '/../resources/views');
-        Lang::addNamespace('pwa-plugin', __DIR__ . '/../lang');
-
         $this->registerHeadHook($panel);
 
         if ($panel->getId() === 'admin') {

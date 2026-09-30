@@ -111,7 +111,7 @@ class PwaActions
                 ->description(fn (): string => trans('pwa-plugin::pwa-plugin.preferences.section_description'))
                 ->schema([
                     SchemaActions::make([
-                        Action::make('save_notification_preferences')
+                        Action::make('exclude_notification_preferences')
                             ->label(fn (): string => trans('pwa-plugin::pwa-plugin.preferences.modify_button'))
                             ->icon('heroicon-o-check-circle')
                             ->color('primary')
