@@ -5,6 +5,7 @@ namespace PwaPlugin\Providers;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Route;
 use PwaPlugin\Http\Controllers\PwaController;
+use PwaPlugin\Http\Controllers\PwaApplicationPushController;
 use PwaPlugin\Http\Controllers\PwaPushController;
 
 class PwaPluginRouteServiceProvider extends ServiceProvider
@@ -53,6 +54,21 @@ class PwaPluginRouteServiceProvider extends ServiceProvider
                     Route::get('/pwa/diagnostics', [PwaPushController::class, 'diagnostics'])->name('pwa.diagnostics');
                 });
             }
+
+            Route::middleware(['api', 'application-api', 'throttle:api.application'])
+                ->prefix('/api/application/pwa')
+                ->scopeBindings()
+                ->group(function (): void {
+                    if (!Route::has('pwa.application.push.user')) {
+                        Route::post('/users/{user:id}/notifications', [PwaApplicationPushController::class, 'sendToUser'])
+                            ->name('pwa.application.push.user');
+                    }
+
+                    if (!Route::has('pwa.application.push.broadcast')) {
+                        Route::post('/notifications/broadcast', [PwaApplicationPushController::class, 'broadcast'])
+                            ->name('pwa.application.push.broadcast');
+                    }
+                });
         });
     }
 }

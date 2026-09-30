@@ -92,6 +92,86 @@ composer require minishlink/web-push:^11.0.0 -W
 
 Push subscription endpoints must use HTTPS and resolve to public IP addresses.
 
+## Application API
+
+Use these endpoints when another backend service needs to trigger a PWA push. They use Pelican's Application API authentication and rate limit.
+
+### Before you start
+
+1. Enable push notifications in **Admin > PWA** and configure valid VAPID keys.
+2. Make sure users have subscribed to push in their profile. A push can only be sent to a user's registered browser subscriptions.
+3. Create a Pelican Application API key with **Users: Write** access. Send it as a bearer token in the `Authorization` header. Keep this key secret and make requests over HTTPS.
+
+Use your panel's public origin in place of `https://panel.example.com`. The user-specific endpoint takes the user's numeric panel ID.
+
+### Send to one user
+
+```bash
+curl --request POST 'https://panel.example.com/api/application/pwa/users/123/notifications' \
+  --header 'Authorization: Bearer YOUR_APPLICATION_API_KEY' \
+  --header 'Accept: application/json' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "title": "Server ready",
+    "body": "Your server has finished installing.",
+    "url": "/",
+    "tag": "server-ready"
+  }'
+```
+
+### Broadcast to all subscriptions
+
+Use the same headers and JSON body as the user-specific request, but call:
+
+```bash
+curl --request POST 'https://panel.example.com/api/application/pwa/notifications/broadcast' \
+  --header 'Authorization: Bearer YOUR_APPLICATION_API_KEY' \
+  --header 'Accept: application/json' \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "title": "Scheduled maintenance",
+    "body": "The panel will be unavailable at 02:00 UTC.",
+    "url": "/",
+    "tag": "maintenance"
+  }'
+```
+
+### Request fields
+
+| Field | Type | Required | Meaning |
+| --- | --- | --- | --- |
+| `title` | string, up to 120 characters | Yes | Notification heading. |
+| `body` | string, up to 300 characters | Yes | Notification text. |
+| `url` | panel-relative path | No | Page opened when the notification is clicked. Must start with one `/`; defaults to `/`. |
+| `icon` | string | No | Icon URL/path; defaults to the icon configured in **Admin > PWA**. |
+| `badge` | string | No | Badge URL/path; defaults to the badge configured in **Admin > PWA**. |
+| `tag` | string, up to 255 characters | No | Browser notification tag; defaults to `pwa-api`. |
+| `require_interaction` | boolean | No | Ask the browser to keep the notification visible until the user interacts; defaults to `false`. |
+
+### Response and errors
+
+On success, the response reports provider send results:
+
+```json
+{
+  "message": "Push notification sent.",
+  "sent": 2,
+  "failed": 0,
+  "total": 2
+}
+```
+
+`sent` means the push service accepted the message. Browser and operating-system settings still determine whether it is displayed. The broadcast sends to all registered subscriptions and, like the existing admin broadcast, does not filter by notification preference channels.
+
+| HTTP status | Meaning |
+| --- | --- |
+| `401` / `403` | Missing or unauthorized Application API key, or insufficient **Users: Write** access. |
+| `404` | The target user or their subscriptions were not found; broadcast has no subscriptions. |
+| `409` | Push notifications are disabled in plugin settings. |
+| `422` | Invalid request fields. |
+| `502` | Subscriptions existed, but no push service accepted the message. Check the `failed` count. |
+| `503` | Plugin subscription migrations, Web Push library, or VAPID configuration are unavailable. |
+
 ## Admin Pages
 
 ### Admin → PWA
