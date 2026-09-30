@@ -95,7 +95,7 @@ class PwaActions
                                         return;
                                     }
 
-                                    $wire.call('mountAction', 'exclude_test');
+                                    window.alert(result.message);
                                 }).catch(() => {
                                     btn.disabled = false;
                                     window.alert('Failed to send notification.');
