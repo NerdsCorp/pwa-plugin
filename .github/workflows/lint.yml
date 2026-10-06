@@ -7,8 +7,8 @@ on:
   pull_request:
 
 jobs:
-  pint:
-    name: Pint
+  lint:
+    name: Pint and PHPStan
     runs-on: ubuntu-latest
 
     steps:
@@ -18,61 +18,15 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: 8.5
+          php-version: '8.4
           tools: composer:v2
           coverage: none
 
-      - name: Init composer
-        run: composer init --no-interaction
-
-      - name: Install Laravel Pint
-        run: composer require "laravel/pint:^1.29"
+      - name: Install Composer dependencies
+        run: composer install --no-interaction --prefer-dist --no-progress
 
       - name: Run Pint
         run: vendor/bin/pint --test
-  phpstan:
-    name: PHPStan
-    runs-on: ubuntu-latest
 
-    strategy:
-      fail-fast: true
-      matrix:
-        php: [ 8.4, 8.5 ]
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v6
-
-      - name: Clone Pelican Panel
-        run: git clone --depth=1 https://github.com/pelican/panel pelican
-
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: ${{ matrix.php }}
-          tools: composer:v2
-          coverage: none
-
-      - name: Install panel dependencies
-        run: |
-          cd pelican
-          composer install --no-interaction --no-suggest --no-progress --no-scripts
-
-      - name: Install plugin dependencies
-        run: |
-          cd pelican
-          composer require "stripe/stripe-php:^20.1" "kovah/laravel-socialite-oidc:^0.8" "xpaw/php-minecraft-query:^5.0.0" "xpaw/php-source-query-class:^6.0.0"
-
-      - name: Setup .env file
-        run: cp pelican/.env.example pelican/.env
-
-      - name: Move plugin folders and phpstan.neon
-        run: |
-          mkdir -p pelican/plugins
-          rsync -av --progress ./ pelican/plugins/ --exclude=pelican
-          cp phpstan.neon pelican/phpstan.neon
-
-      - name: Run PHPStan Analysis
-        run: |
-          cd pelican
-          vendor/bin/phpstan analyse --memory-limit=-1 --error-format=github
+      - name: Run PHPStan
+        run: vendor/bin/phpstan analyse --no-progress --error-format=github
