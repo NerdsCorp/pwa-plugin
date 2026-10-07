@@ -4,6 +4,7 @@ namespace PwaPlugin\Services;
 
 use Filament\Actions\Action;
 use Filament\Forms\Components\CheckboxList;
+use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
@@ -11,6 +12,7 @@ use Filament\Notifications\Notification;
 use Filament\Schemas\Components\Actions as SchemaActions;
 use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Section;
+use Illuminate\Support\HtmlString;
 use Illuminate\Support\Str;
 
 class PwaActions
@@ -107,6 +109,16 @@ class PwaActions
         ];
 
         if ($includePreferences) {
+            $schema[] = Section::make(fn (): string => trans('pwa-plugin::pwa-plugin.devices.title'))
+                ->description(fn (): string => trans('pwa-plugin::pwa-plugin.devices.description'))
+                ->schema([
+                    Placeholder::make('pwa_device_management')
+                        ->hiddenLabel()
+                        ->content(fn (): HtmlString => new HtmlString(
+                            '<div id="pwa-device-management" class="space-y-3"><p>' . e(trans('pwa-plugin::pwa-plugin.devices.loading')) . '</p></div>'
+                        )),
+                ]);
+
             $schema[] = Section::make(fn (): string => trans('pwa-plugin::pwa-plugin.preferences.section_title'))
                 ->description(fn (): string => trans('pwa-plugin::pwa-plugin.preferences.section_description'))
                 ->schema([

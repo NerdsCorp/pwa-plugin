@@ -108,6 +108,94 @@ class PwaPushController extends Controller
         ]);
     }
 
+    public function devices(Request $request): JsonResponse
+    {
+        if (!Schema::hasTable('pwa_push_subscriptions')) {
+            return response()->json(['devices' => []]);
+        }
+
+        $user = $this->resolveUser($request);
+        if (!$user) {
+            return response()->json(['message' => trans('pwa-plugin::pwa-plugin.errors.unauthorized')], 401);
+        }
+
+        $devices = PwaPushSubscription::query()
+            ->where('notifiable_type', $user->getMorphClass())
+            ->where('notifiable_id', $user->getKey())
+            ->orderByDesc('updated_at')
+            ->get()
+            ->map(function (PwaPushSubscription $subscription) use ($request): array {
+                $activity = collect([
+                    $subscription->last_synced_at,
+                    $subscription->last_push_sent_at,
+                ])->filter()->sortByDesc(fn ($date) => $date->getTimestamp())->first();
+
+                return [
+                    'id' => $subscription->getKey(),
+                    'name' => $subscription->device_name ?: $this->deviceNameFromUserAgent((string) $subscription->user_agent),
+                    'last_activity' => $activity?->toIso8601String(),
+                    'current' => hash_equals((string) $subscription->endpoint_hash, (string) $request->query('endpoint_hash', '')),
+                ];
+            });
+
+        return response()->json(['devices' => $devices]);
+    }
+
+    public function renameDevice(Request $request, int $subscription): JsonResponse
+    {
+        $request->validate(['name' => ['required', 'string', 'max:100']]);
+        $device = $this->ownedSubscription($request, $subscription);
+        if (!$device) {
+            return response()->json(['message' => trans('pwa-plugin::pwa-plugin.devices.not_found')], 404);
+        }
+
+        $device->device_name = trim((string) $request->input('name'));
+        $device->save();
+
+        return response()->json(['message' => trans('pwa-plugin::pwa-plugin.devices.renamed')]);
+    }
+
+    public function removeDevice(Request $request, int $subscription): JsonResponse
+    {
+        $device = $this->ownedSubscription($request, $subscription);
+        if (!$device) {
+            return response()->json(['message' => trans('pwa-plugin::pwa-plugin.devices.not_found')], 404);
+        }
+
+        $device->delete();
+
+        return response()->json(['message' => trans('pwa-plugin::pwa-plugin.devices.removed')]);
+    }
+
+    private function ownedSubscription(Request $request, int $id): ?PwaPushSubscription
+    {
+        $user = $this->resolveUser($request);
+        if (!$user) {
+            return null;
+        }
+
+        return PwaPushSubscription::query()
+            ->whereKey($id)
+            ->where('notifiable_type', $user->getMorphClass())
+            ->where('notifiable_id', $user->getKey())
+            ->first();
+    }
+
+    private function deviceNameFromUserAgent(string $userAgent): string
+    {
+        $browser = str_contains($userAgent, 'Edg/') ? 'Edge'
+            : (str_contains($userAgent, 'Firefox/') ? 'Firefox'
+                : (str_contains($userAgent, 'Chrome/') ? 'Chrome'
+                    : (str_contains($userAgent, 'Safari/') ? 'Safari' : 'Browser')));
+        $platform = str_contains($userAgent, 'iPhone') ? 'iPhone'
+            : (str_contains($userAgent, 'iPad') ? 'iPad'
+                : (str_contains($userAgent, 'Android') ? 'Android'
+                    : (str_contains($userAgent, 'Windows') ? 'Windows'
+                        : (str_contains($userAgent, 'Macintosh') ? 'Mac' : 'Device'))));
+
+        return $platform . ' - ' . $browser;
+    }
+
     public function test(Request $request, PwaSettingsRepository $settings, PwaPushService $push): JsonResponse
     {
         if (!Schema::hasTable('pwa_push_subscriptions')) {

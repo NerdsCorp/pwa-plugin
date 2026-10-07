@@ -55,6 +55,18 @@ class PwaPluginRouteServiceProvider extends ServiceProvider
                 });
             }
 
+            Route::middleware(['web', 'auth', 'throttle:60,1'])->group(function () {
+                if (!Route::has('pwa.devices.index')) {
+                    Route::get('/pwa/devices', [PwaPushController::class, 'devices'])->name('pwa.devices.index');
+                }
+                if (!Route::has('pwa.devices.rename')) {
+                    Route::patch('/pwa/devices/{subscription}', [PwaPushController::class, 'renameDevice'])->name('pwa.devices.rename');
+                }
+                if (!Route::has('pwa.devices.remove')) {
+                    Route::delete('/pwa/devices/{subscription}', [PwaPushController::class, 'removeDevice'])->name('pwa.devices.remove');
+                }
+            });
+
             Route::middleware(['api', 'application-api', 'throttle:api.application'])
                 ->prefix('/api/application/pwa')
                 ->scopeBindings()

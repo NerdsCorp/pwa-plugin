@@ -18,6 +18,7 @@ class PwaPushSubscription extends Model
         'auth_token',
         'content_encoding',
         'user_agent',
+        'device_name',
         'last_synced_at',
         'last_push_sent_at',
     ];

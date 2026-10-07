@@ -108,6 +108,18 @@ class PwaPlugin implements HasPluginSettings, PluginContract
 
         $langUpdateAvailable = json_encode(trans('pwa-plugin::pwa-plugin.messages.update_available'));
         $langInstallAlready = json_encode(trans('pwa-plugin::pwa-plugin.errors.install_already'));
+        $deviceStrings = json_encode([
+            'loading' => trans('pwa-plugin::pwa-plugin.devices.loading'),
+            'empty' => trans('pwa-plugin::pwa-plugin.devices.empty'),
+            'lastActivity' => trans('pwa-plugin::pwa-plugin.devices.last_activity', ['time' => ':time']),
+            'neverActive' => trans('pwa-plugin::pwa-plugin.devices.never_active'),
+            'current' => trans('pwa-plugin::pwa-plugin.devices.current'),
+            'rename' => trans('pwa-plugin::pwa-plugin.devices.rename'),
+            'remove' => trans('pwa-plugin::pwa-plugin.devices.remove'),
+            'renamePrompt' => trans('pwa-plugin::pwa-plugin.devices.rename_prompt'),
+            'removeConfirm' => trans('pwa-plugin::pwa-plugin.devices.remove_confirm'),
+            'loadFailed' => trans('pwa-plugin::pwa-plugin.devices.load_failed'),
+        ], JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT);
 
         $html = <<<HTML
         <meta name="application-name" content="{$appNameEsc}">
@@ -132,7 +144,9 @@ class PwaPlugin implements HasPluginSettings, PluginContract
                 unsubscribe: "/pwa/unsubscribe",
                 test: "/pwa/test",
                 sync: "/pwa/sync",
+                devices: "/pwa/devices",
             },
+            deviceStrings: {$deviceStrings},
             lang: {
                 updateAvailable: {$langUpdateAvailable},
                 installAlready: {$langInstallAlready}
@@ -143,6 +157,104 @@ class PwaPlugin implements HasPluginSettings, PluginContract
             const tokenElement = document.querySelector('meta[name="csrf-token"]');
             return tokenElement ? (tokenElement.getAttribute('content') || '') : '';
         }
+
+        function pwaDeviceElement(tag, text, className) {
+            const element = document.createElement(tag);
+            element.textContent = text;
+            if (className) element.className = className;
+            return element;
+        }
+
+        async function pwaCurrentEndpointHash() {
+            try {
+                const registration = await navigator.serviceWorker.ready;
+                const subscription = await registration.pushManager.getSubscription();
+                if (!subscription || !window.crypto?.subtle) return '';
+                const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(subscription.endpoint));
+                return Array.from(new Uint8Array(digest), byte => byte.toString(16).padStart(2, '0')).join('');
+            } catch (_e) {
+                return '';
+            }
+        }
+
+        window.pwaLoadDevices = async function() {
+            const list = document.getElementById('pwa-device-management');
+            if (!list || !window.pwaConfig?.routes?.devices) return;
+            const strings = window.pwaConfig.deviceStrings;
+            list.replaceChildren(pwaDeviceElement('p', strings.loading));
+
+            try {
+                const endpointHash = await pwaCurrentEndpointHash();
+                const response = await fetch(window.pwaConfig.routes.devices + (endpointHash ? '?endpoint_hash=' + encodeURIComponent(endpointHash) : ''), {
+                    headers: { 'Accept': 'application/json' },
+                    credentials: 'same-origin',
+                });
+                if (!response.ok) throw new Error('Request failed');
+                const result = await response.json();
+                list.replaceChildren();
+                if (!result.devices?.length) {
+                    list.append(pwaDeviceElement('p', strings.empty));
+                    return;
+                }
+
+                for (const device of result.devices) {
+                    const card = pwaDeviceElement('div', null, 'flex flex-wrap items-center justify-between gap-3 rounded-lg border border-gray-200 p-3 dark:border-gray-700');
+                    const details = pwaDeviceElement('div', null, 'min-w-0');
+                    const title = pwaDeviceElement('div', device.name, 'font-medium');
+                    if (device.current) title.append(' · ' + strings.current);
+                    const activity = device.last_activity
+                        ? strings.lastActivity.replace(':time', new Date(device.last_activity).toLocaleString())
+                        : strings.neverActive;
+                    details.append(title, pwaDeviceElement('div', activity, 'text-sm text-gray-500'));
+
+                    const actions = pwaDeviceElement('div', null, 'flex gap-2');
+                    const rename = pwaDeviceElement('button', strings.rename, 'fi-btn fi-btn-size-sm');
+                    rename.type = 'button';
+                    rename.addEventListener('click', async () => {
+                        const name = window.prompt(strings.renamePrompt, device.name);
+                        if (name === null || !name.trim()) return;
+                        const update = await fetch(window.pwaConfig.routes.devices + '/' + encodeURIComponent(device.id), {
+                            method: 'PATCH',
+                            headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': pwaCsrfToken(), 'Accept': 'application/json' },
+                            body: JSON.stringify({ name: name.trim() }),
+                        });
+                        if (!update.ok) {
+                            window.alert((await update.json().catch(() => ({}))).message || strings.loadFailed);
+                            return;
+                        }
+                        window.pwaLoadDevices();
+                    });
+
+                    const remove = pwaDeviceElement('button', strings.remove, 'fi-btn fi-btn-size-sm fi-color-danger');
+                    remove.type = 'button';
+                    remove.addEventListener('click', async () => {
+                        if (!window.confirm(strings.removeConfirm)) return;
+                        const deletion = await fetch(window.pwaConfig.routes.devices + '/' + encodeURIComponent(device.id), {
+                            method: 'DELETE',
+                            headers: { 'X-CSRF-TOKEN': pwaCsrfToken(), 'Accept': 'application/json' },
+                        });
+                        if (!deletion.ok) {
+                            window.alert((await deletion.json().catch(() => ({}))).message || strings.loadFailed);
+                            return;
+                        }
+                        if (device.current) {
+                            const registration = await navigator.serviceWorker.ready;
+                            const subscription = await registration.pushManager.getSubscription();
+                            if (subscription) await subscription.unsubscribe();
+                        }
+                        window.pwaLoadDevices();
+                    });
+                    actions.append(rename, remove);
+                    card.append(details, actions);
+                    list.append(card);
+                }
+            } catch (_e) {
+                list.replaceChildren(pwaDeviceElement('p', strings.loadFailed));
+            }
+        };
+
+        document.addEventListener('DOMContentLoaded', window.pwaLoadDevices);
+        document.addEventListener('livewire:navigated', window.pwaLoadDevices);
 
         window.pwaRequestNotifications = function() {
             if (!('Notification' in window)) return Promise.resolve('unsupported');

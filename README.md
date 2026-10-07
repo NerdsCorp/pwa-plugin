@@ -215,6 +215,8 @@ Users get a **PWA** section in their profile with quick actions:
 - Unsubscribe from push
 - Send test push
 
+The profile also lists subscribed devices. Users can give each device a name, see its last push or subscription sync activity, and remove individual devices. Removing the current device also unsubscribes its browser from push notifications.
+
 ## Icon Setup
 
 Android requires PNG icons — SVG and ICO files won't work reliably for app installation or notifications.
