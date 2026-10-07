@@ -30,12 +30,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout plugin
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           path: pwa-plugin
 
       - name: Checkout Pelican Panel (${{ needs.resolve-latest-panel-release.outputs.latest_tag }})
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           repository: pelican/panel
           ref: ${{ needs.resolve-latest-panel-release.outputs.latest_tag }}
