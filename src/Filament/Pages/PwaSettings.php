@@ -122,7 +122,7 @@ class PwaSettings extends Page implements HasSchemas
             'cache_name' => self::defaultFromEnv('cache_name', 'PWA_PLUGIN_CACHE_NAME', 'pelican-pwa-v1'),
             'cache_version' => (int) config('pwa-plugin.cache_version', 1),
             'cache_enabled' => (bool) config('pwa-plugin.cache_enabled', false),
-            'cache_precache_urls' => self::defaultFromEnv('cache_precache_urls', 'PWA_PLUGIN_CACHE_PRECACHE_URLS', ''),
+            'cache_precache_urls' => self::precacheUrlsForTextarea(self::defaultFromEnv('cache_precache_urls', 'PWA_PLUGIN_CACHE_PRECACHE_URLS', '')),
             'manifest_icon_192' => self::defaultFromEnv('manifest_icon_192', 'PWA_PLUGIN_MANIFEST_ICON_192', '/pelican.svg'),
             'manifest_icon_512' => self::defaultFromEnv('manifest_icon_512', 'PWA_PLUGIN_MANIFEST_ICON_512', '/pelican.svg'),
             'apple_touch_icon' => self::defaultFromEnv('apple_touch_icon', 'PWA_PLUGIN_APPLE_TOUCH_ICON', '/pelican.svg'),
@@ -391,7 +391,7 @@ class PwaSettings extends Page implements HasSchemas
             'PWA_PLUGIN_CACHE_NAME' => (string) ($state['cache_name'] ?? self::defaultSettings()['cache_name']),
             'PWA_PLUGIN_CACHE_VERSION' => (string) ($state['cache_version'] ?? self::defaultSettings()['cache_version']),
             'PWA_PLUGIN_CACHE_ENABLED' => ($state['cache_enabled'] ?? self::defaultSettings()['cache_enabled']) ? 'true' : 'false',
-            'PWA_PLUGIN_CACHE_PRECACHE_URLS' => (string) ($state['cache_precache_urls'] ?? self::defaultSettings()['cache_precache_urls']),
+            'PWA_PLUGIN_CACHE_PRECACHE_URLS' => self::precacheUrlsForEnvironment((string) ($state['cache_precache_urls'] ?? self::defaultSettings()['cache_precache_urls'])),
             'PWA_PLUGIN_MANIFEST_ICON_192' => (string) ($state['manifest_icon_192'] ?? self::defaultSettings()['manifest_icon_192']),
             'PWA_PLUGIN_MANIFEST_ICON_512' => (string) ($state['manifest_icon_512'] ?? self::defaultSettings()['manifest_icon_512']),
             'PWA_PLUGIN_APPLE_TOUCH_ICON' => (string) ($state['apple_touch_icon'] ?? self::defaultSettings()['apple_touch_icon']),
@@ -413,6 +413,20 @@ class PwaSettings extends Page implements HasSchemas
     private static function applyUploads(array &$state): void
     {
         // No-op: uploads removed.
+    }
+
+    private static function precacheUrlsForTextarea(string $value): string
+    {
+        $urls = preg_split('/[\\r\\n,]+/', $value) ?: [];
+
+        return implode("\n", array_filter(array_map('trim', $urls), fn (string $url): bool => $url !== ''));
+    }
+
+    private static function precacheUrlsForEnvironment(string $value): string
+    {
+        $urls = preg_split('/[\\r\\n,]+/', $value) ?: [];
+
+        return implode(',', array_filter(array_map('trim', $urls), fn (string $url): bool => $url !== ''));
     }
 
     public static function buildSyncDiagnostics(PwaSettingsRepository $settings, PwaPushService $push): array
