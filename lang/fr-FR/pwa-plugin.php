@@ -132,6 +132,7 @@ return [
     ],
     'notifications' => [
         'saved' => 'Paramètres PWA enregistrés.',
+        'vapid_generation_failed' => 'Paramètres PWA enregistrés, mais les clés VAPID n’ont pas pu être générées. Les notifications push sont indisponibles jusqu’à la résolution du problème.',
         'subscribed' => 'Abonné aux notifications push avec succès.',
         'unsubscribed' => 'Désabonné avec succès.',
         'test_sent' => 'Notification de test envoyée.',

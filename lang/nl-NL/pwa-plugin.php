@@ -140,6 +140,7 @@ return [
     ],
     'notifications' => [
         'saved' => 'PWA-instellingen opgeslagen.',
+        'vapid_generation_failed' => 'PWA-instellingen opgeslagen, maar VAPID-sleutels konden niet worden gegenereerd. Pushmeldingen zijn niet beschikbaar totdat dit probleem is opgelost.',
         'subscribed' => 'Succesvol geabonneerd op pushmeldingen.',
         'unsubscribed' => 'Succesvol afgemeld.',
         'test_sent' => 'Testmelding is verzonden.',

@@ -132,6 +132,7 @@ return [
     ],
     'notifications' => [
         'saved' => 'PWA settings saved.',
+        'vapid_generation_failed' => 'PWA settings saved, but VAPID keys could not be generated. Push notifications are unavailable until this is fixed.',
         'subscribed' => 'Successfully subscribed to push notifications.',
         'unsubscribed' => 'Successfully unsubscribed.',
         'test_sent' => 'Test notification has been sent.',

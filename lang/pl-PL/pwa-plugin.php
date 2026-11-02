@@ -140,6 +140,7 @@ return [
     ],
     'notifications' => [
         'saved' => 'Zapisano ustawienia PWA.',
+        'vapid_generation_failed' => 'Ustawienia PWA zostały zapisane, ale nie udało się wygenerować kluczy VAPID. Powiadomienia push będą niedostępne do czasu rozwiązania problemu.',
         'subscribed' => 'Pomyślnie zasubskrybowano powiadomienia Push.',
         'unsubscribed' => 'Pomyślnie odsubskrybowano.',
         'test_sent' => 'Testowe powiadomienie zostało wysłane.',

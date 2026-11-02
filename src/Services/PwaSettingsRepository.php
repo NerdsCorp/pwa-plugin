@@ -97,33 +97,40 @@ class PwaSettingsRepository
         return $default;
     }
 
-    public function ensureVapidKeys(): void
+    public function ensureVapidKeys(): bool
     {
         if ($this->hasEnvironmentOverride('vapid_public_key') || $this->hasEnvironmentOverride('vapid_private_key')) {
-            return;
+            return true;
         }
 
         if (!Schema::hasTable('pwa_settings')) {
-            return;
+            return true;
         }
 
         if (!class_exists(VAPID::class)) {
-            return;
+            return true;
         }
 
         $public = (string) $this->get('vapid_public_key', '');
         $private = (string) $this->get('vapid_private_key', '');
 
         if ($public !== '' && $private !== '') {
-            return;
+            return true;
         }
 
-        $keys = VAPID::createVapidKeys();
+        try {
+            $keys = VAPID::createVapidKeys();
+        } catch (\Throwable) {
+            // Push can remain unavailable without preventing the panel from rendering.
+            return false;
+        }
 
         $this->setMany([
             'vapid_public_key' => $keys['publicKey'] ?? '',
             'vapid_private_key' => $keys['privateKey'] ?? '',
         ]);
+
+        return true;
     }
 
     public function set(string $key, mixed $value): void

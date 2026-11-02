@@ -140,6 +140,7 @@ return [
     ],
     'notifications' => [
         'saved' => 'PWA-Einstellungen gespeichert.',
+        'vapid_generation_failed' => 'PWA-Einstellungen gespeichert, aber VAPID-Schlüssel konnten nicht erstellt werden. Push-Benachrichtigungen sind bis zur Behebung des Problems nicht verfügbar.',
         'subscribed' => 'Push-Benachrichtigungen erfolgreich abonniert.',
         'unsubscribed' => 'Erfolgreich abgemeldet.',
         'test_sent' => 'Test-Benachrichtigung wurde gesendet.',

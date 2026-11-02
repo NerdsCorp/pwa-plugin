@@ -107,6 +107,13 @@ class PwaSettings extends Page implements HasSchemas
 
         $settings->setMany($state);
 
+        if (!$settings->ensureVapidKeys()) {
+            Notification::make()
+                ->title(trans('pwa-plugin::pwa-plugin.notifications.vapid_generation_failed'))
+                ->warning()
+                ->send();
+        }
+
         Notification::make()
             ->title(trans('pwa-plugin::pwa-plugin.notifications.saved'))
             ->success()
